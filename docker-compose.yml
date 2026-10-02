@@ -1,0 +1,13 @@
+services:
+  bot:
+    build: .
+    image: dao-treasury-analyst:latest
+    command: ["bot"]
+    env_file: .env
+    restart: unless-stopped
+    volumes:
+      - ./logs:/app/logs   # JSONL audit log of questions, tool calls and verification
+    deploy:
+      resources:
+        limits:
+          memory: 512m

@@ -54,9 +54,11 @@ def ask(
 
     settings = get_settings()
     cfg = load_dao_config(settings.dao_config)
+    from dao_analyst.interfaces.service import format_reply
+
     agent = build_agent(cfg, settings, build_llm(settings, provider=provider, model=model))
     result = agent.answer(question)
-    typer.echo(result.text)
+    typer.echo(format_reply(result))
     if show_trace:
         typer.echo("\n--- trace ---")
         for call in result.tool_calls:
@@ -68,6 +70,34 @@ def ask(
             f"tokens={result.input_tokens}+{result.output_tokens} "
             f"latency={result.latency_s:.1f}s"
         )
+
+
+@app.command()
+def bot() -> None:
+    """Start the Telegram bot (needs TELEGRAM_BOT_TOKEN and an LLM key)."""
+    from dao_analyst.agent.factory import build_agent, build_llm
+    from dao_analyst.interfaces.service import QuestionService, RateLimiter
+    from dao_analyst.interfaces.telegram_bot import build_app
+
+    configure_logging("INFO", json=True)
+    settings = get_settings()
+    if not settings.telegram_bot_token:
+        raise typer.BadParameter("TELEGRAM_BOT_TOKEN is not set (see .env.example)")
+    cfg = load_dao_config(settings.dao_config)
+    agent = build_agent(cfg, settings, build_llm(settings))
+    service = QuestionService(
+        agent.answer,
+        RateLimiter(settings.rate_limit_requests, settings.rate_limit_window_s),
+        settings.max_concurrent_questions,
+    )
+    allowed = {int(x) for x in settings.telegram_allowed_users.split(",") if x.strip()}
+    intro = (
+        f"I answer questions about the {cfg.dao.name} treasury on {cfg.chain.name}, using a "
+        "pinned on-chain snapshot. Every figure comes from deterministic code and links to "
+        "the transactions behind it. I don't give investment advice or price predictions, "
+        "and I only look at the treasury and verified institutional counterparties."
+    )
+    build_app(settings.telegram_bot_token, service, intro, allowed or None).run_polling()
 
 
 @app.command(name="eval")

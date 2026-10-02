@@ -27,6 +27,13 @@ class Settings(BaseSettings):
     openrouter_api_key: str | None = None
     audit_log: Path | None = Path("logs/audit.jsonl")
 
+    # Telegram bot
+    telegram_bot_token: str | None = None
+    telegram_allowed_users: str = ""  # comma-separated numeric ids; empty = public
+    rate_limit_requests: int = 5
+    rate_limit_window_s: float = 600.0
+    max_concurrent_questions: int = 2
+
     # Requests per second; the Etherscan free tier currently allows 3/s.
     etherscan_rps: float = 2.5
     http_timeout_s: float = 30.0
