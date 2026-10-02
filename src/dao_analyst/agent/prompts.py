@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from datetime import timedelta
+
 from dao_analyst.tools.dataset import Dataset
 
 TOOL_AGENT = """\
@@ -15,7 +17,8 @@ Data scope
 - Verified tokens: {tokens}. Other tokens the treasury received are unverified (often spam).
 - USD values come from a pinned daily price snapshot ({price_source}).
 - Counterparty labels are hand-verified. Label categories: {categories}. Never guess what an
-  unlabeled address is; call it "an unlabeled address".
+  unlabeled address is; call it "an unlabeled address". Unlabeled addresses cannot be
+  filtered on or investigated further (privacy policy); report them as they appear.
 
 Rules
 1. Every number in your answer must come from a tool result. Never estimate, convert, add,
@@ -36,7 +39,8 @@ Rules
 4. status="refuse" for investment advice, price predictions, trading recommendations, or
    questions about addresses other than the treasury and labeled counterparties. Explain why
    in `missing`.
-5. Be concise and factual. No opinions about whether spending was good or bad.
+5. Be efficient: once the tool results contain the figures the question asks for, submit.
+6. Be concise and factual. No opinions about whether spending was good or bad.
 """
 
 NAIVE = """\
@@ -48,7 +52,8 @@ Data covers the full history up to block {end_block} ({end_utc}).
 Counterparty labels (address,name,category):
 {labels}
 
-Daily USD prices (date,{price_cols}):
+Daily USD prices (date,{price_cols}) for every day with a transfer, every month end and the
+data end date. A blank cell means no price is available:
 {prices}
 
 Raw token and ETH transfers involving the treasury (block,utc_time,tx_hash,kind,from,to,
@@ -78,7 +83,16 @@ def tool_agent_prompt(data: Dataset, dao: str) -> str:
 
 def naive_prompt(data: Dataset, dao: str) -> str:
     tokens = sorted(data.tokens.values(), key=lambda t: t.symbol)
-    days = sorted({d for (_, d) in data.prices})
+    # Prices for transfer days, month ends and the end date: enough for every flow and
+    # month-end balance question, while keeping the prompt within free-tier limits.
+    all_days = {d for (_, d) in data.prices} | {r.block_time.date() for r in data.rows}
+    days = sorted(
+        d
+        for d in all_days
+        if d in {r.block_time.date() for r in data.rows}
+        or (d + timedelta(days=1)).day == 1
+        or d == data.end_date
+    )
     price_lines = []
     for d in days:
         cells = [str(data.prices.get((t.price_id or "", d), "")) for t in tokens]

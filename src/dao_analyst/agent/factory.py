@@ -24,6 +24,7 @@ def build_llm(
     model: str | None = None,
     cassette: Path | None = None,
     replay_only: bool = False,
+    min_interval_s: float = 0.0,
 ) -> LLMClient:
     provider = provider or settings.llm_provider
     model = model or settings.llm_model
@@ -37,7 +38,9 @@ def build_llm(
     api_key = getattr(settings, key_name.lower(), None)
     if not api_key:
         raise ConfigError(f"{key_name} is not set (see .env.example)")
-    inner = OpenAICompatClient(base_url=base_url, api_key=api_key, model=model)
+    inner = OpenAICompatClient(
+        base_url=base_url, api_key=api_key, model=model, min_interval_s=min_interval_s
+    )
     return CassetteLLM(cassette, model=model, inner=inner) if cassette else inner
 
 

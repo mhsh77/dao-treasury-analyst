@@ -190,7 +190,23 @@ def test_tool_errors_are_returned_to_the_model() -> None:
     assert tool_msg["role"] == "tool" and "invalid call" in tool_msg["content"]
 
 
-def test_step_limit_ends_with_error() -> None:
+def test_last_round_only_allows_submitting() -> None:
+    llm = ScriptedLLM([[("describe_snapshot", {})]] * 2 + [[submit("abstain", "n/a", missing="x")]])
+    tools_seen = []
+    original = llm.chat
+
+    def spy(messages, tools=None, tool_choice=None):  # type: ignore[no-untyped-def]
+        tools_seen.append([t["function"]["name"] for t in tools or []])
+        return original(messages, tools, tool_choice)
+
+    llm.chat = spy  # type: ignore[method-assign]
+    res = agent(llm, max_rounds=3).answer("q")
+    assert res.outcome is Outcome.ABSTAIN
+    assert len(tools_seen[0]) > 1 and tools_seen[-1] == ["submit_answer"]
+    assert "Step limit reached" in llm.seen[-1][-1]["content"]
+
+
+def test_step_limit_without_submission_ends_with_error() -> None:
     llm = ScriptedLLM([[("describe_snapshot", {})]] * 3)
     res = agent(llm, max_rounds=3).answer("q")
     assert res.outcome is Outcome.ERROR

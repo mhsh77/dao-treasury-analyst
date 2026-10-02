@@ -70,5 +70,37 @@ def ask(
         )
 
 
+@app.command(name="eval")
+def eval_cmd(
+    run_id: str = typer.Option(..., help="Run directory name under eval/runs/"),
+    mode: str = typer.Option("replay", help="replay (offline) or record (live model)"),
+    configs: str = typer.Option("naive,tools_no_verifier,full", help="Comma-separated"),
+    only: str | None = typer.Option(None, help="Comma-separated question ids"),
+    model: str | None = typer.Option(None),
+    provider: str | None = typer.Option(None),
+    min_interval: float = typer.Option(4.0, help="Seconds between model calls (record mode)"),
+) -> None:
+    """Run the evaluation and write metrics.json and report.md for the run."""
+    from dao_analyst.evaluation.report import results_table
+    from dao_analyst.evaluation.runner import run_eval
+
+    if mode not in {"replay", "record"}:
+        raise typer.BadParameter("mode must be replay or record")
+    settings = get_settings()
+    cfg = load_dao_config(settings.dao_config)
+    out = run_eval(
+        cfg,
+        settings,
+        run_id=run_id,
+        configs=configs.split(","),
+        replay=mode == "replay",
+        only=only.split(",") if only else None,
+        model=model,
+        provider=provider,
+        min_interval_s=min_interval,
+    )
+    typer.echo(results_table(out["metrics"]))
+
+
 if __name__ == "__main__":
     app()

@@ -103,6 +103,7 @@ class OpenAICompatClient:
         sleep: Callable[[float], None] = time.sleep,
         client: httpx.Client | None = None,
         extra_body: dict[str, Any] | None = None,
+        min_interval_s: float = 0.0,
     ) -> None:
         self.model = model
         self._url = base_url.rstrip("/") + "/chat/completions"
@@ -112,6 +113,8 @@ class OpenAICompatClient:
         self._sleep = sleep
         self._client = client or httpx.Client(timeout=timeout_s)
         self._extra = extra_body or {}
+        self._min_interval = min_interval_s  # client-side pacing for free-tier RPM limits
+        self._last_call = 0.0
 
     def request_body(
         self, messages: list[Message], tools: list[dict[str, Any]] | None, tool_choice: str | None
@@ -137,6 +140,10 @@ class OpenAICompatClient:
         body = self.request_body(messages, tools, tool_choice)
         delay = 5.0
         for attempt in range(self._max_retries + 1):
+            wait = self._min_interval - (time.monotonic() - self._last_call)
+            if wait > 0:
+                self._sleep(wait)
+            self._last_call = time.monotonic()
             start = time.monotonic()
             try:
                 resp = self._client.post(self._url, headers=self._headers, json=body)

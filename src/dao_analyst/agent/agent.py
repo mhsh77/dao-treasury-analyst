@@ -39,6 +39,12 @@ SUBMIT_SCHEMA = {
 }
 
 
+FINAL_ROUND_NOTE = (
+    "Step limit reached. Call submit_answer now using only the tool results you already have. "
+    "If they are not enough, use status=abstain and say what is missing."
+)
+
+
 class Outcome(StrEnum):
     ANSWER = "answer"
     PARTIAL = "partial"  # verification failed twice; only verified claims are kept
@@ -73,7 +79,8 @@ class AgentResult:
     llm_calls: int = 0
     input_tokens: int = 0
     output_tokens: int = 0
-    latency_s: float = 0.0
+    latency_s: float = 0.0  # wall clock of this run (near zero when replaying)
+    model_latency_s: float = 0.0  # summed model latency as recorded live (stable on replay)
     error: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
@@ -98,6 +105,7 @@ class AuditLog:
 
 def _usage(result: AgentResult, resp: Any) -> None:
     result.llm_calls += 1
+    result.model_latency_s += resp.latency_s
     result.input_tokens += resp.usage.input_tokens
     result.output_tokens += resp.usage.output_tokens
 
@@ -170,8 +178,14 @@ class Agent:
         tools = [*self.registry.schemas, SUBMIT_SCHEMA]
         retries_left = self.config.max_verify_retries
         nudged = False
-        for _ in range(self.config.max_rounds):
-            resp = self.llm.chat(messages, tools, tool_choice="required")
+        for round_no in range(self.config.max_rounds):
+            last_round = round_no == self.config.max_rounds - 1
+            if last_round:
+                # Out of exploration budget: the model may only submit what it has.
+                messages.append({"role": "user", "content": FINAL_ROUND_NOTE})
+            resp = self.llm.chat(
+                messages, [SUBMIT_SCHEMA] if last_round else tools, tool_choice="required"
+            )
             _usage(result, resp)
             messages.append(resp.message)
             if not resp.tool_calls:

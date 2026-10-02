@@ -1,4 +1,4 @@
-.PHONY: install ingest fetch test lint check
+.PHONY: install ingest fetch test lint check questions eval eval-live
 
 install:
 	uv sync
@@ -20,3 +20,18 @@ lint:
 	uv run mypy
 
 check: lint test
+
+# --- evaluation -------------------------------------------------------------------------
+RUN ?= $(shell cat eval/runs/LATEST 2>/dev/null)
+
+questions:
+	uv run python eval/make_questions.py
+	uv run python eval/ground_truth.py
+
+# Offline: replays the recorded model responses of run $(RUN) and recomputes all metrics.
+eval: ingest
+	uv run dao-analyst eval --run-id $(RUN) --mode replay
+
+# Live: calls the model (needs GEMINI_API_KEY or GROQ_API_KEY); resumable.
+eval-live: ingest
+	uv run dao-analyst eval --run-id $(RUN) --mode record
