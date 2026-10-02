@@ -1,0 +1,135 @@
+# Hand-verified counterparty labels. Every entry cites where the identity was confirmed.
+# Addresses not listed here stay unlabeled: the agent must never guess what they are.
+# Categories: governance, vesting, grant_recipient, foundation, committee, delegation,
+#             burn, bridge, contract_name_only
+#
+# Note on "contract_name_only": the only evidence is the contract name from Etherscan's
+# verified source. It says what the contract is, not who operates it.
+
+labels:
+  # --- Governance contracts -------------------------------------------------------------
+  - address: "0x408ED6354d4973f66138C91495F2f2FCbd8724C3"
+    name: Uniswap GovernorBravo
+    category: governance
+    source: https://github.com/Uniswap/docs/blob/main/content/ecosystem/governance/technical-reference.mdx
+  - address: "0xC4e172459f1E7939D522503B81AFAaC1014CE6F6"
+    name: Uniswap GovernorAlpha v2 (deprecated)
+    category: governance
+    source: https://github.com/Uniswap/docs/blob/main/content/ecosystem/governance/technical-reference.mdx
+  - address: "0x5e4be8Bc9637f0EAA1A755019e06A68ce081D58F"
+    name: Uniswap GovernorAlpha (deprecated)
+    category: governance
+    source: https://github.com/Uniswap/docs/blob/main/content/ecosystem/governance/technical-reference.mdx
+
+  # --- Treasury vesting contracts (UNI inflows 2020-2025) --------------------------------
+  - address: "0x4750c43867EF5F89869132ecCF19B9b6C4286E1a"
+    name: UNI treasury vester 1 (year 1)
+    category: vesting
+    source: https://github.com/Uniswap/docs/blob/main/content/ecosystem/governance/technical-reference.mdx
+    note: One of the four year-long vesting contracts that vested UNI to the treasury, Sep 2020 - Sep 2025.
+  - address: "0xe3953D9d317B834592aB58AB2c7A6aD22b54075D"
+    name: UNI treasury vester 2 (year 2)
+    category: vesting
+    source: https://github.com/Uniswap/docs/blob/main/content/ecosystem/governance/technical-reference.mdx
+  - address: "0x4b4e140D1f131fdaD6fb59C13AF796fD194e4135"
+    name: UNI treasury vester 3 (year 3)
+    category: vesting
+    source: https://github.com/Uniswap/docs/blob/main/content/ecosystem/governance/technical-reference.mdx
+  - address: "0x3D30B1aB88D487B0F3061F40De76845Bec3F1e94"
+    name: UNI treasury vester 4 (year 4)
+    category: vesting
+    source: https://github.com/Uniswap/docs/blob/main/content/ecosystem/governance/technical-reference.mdx
+
+  # --- Foundation and committees -----------------------------------------------------------
+  - address: "0xe571dC7A558bb6D68FfE264c3d7BB98B0C6C73fC"
+    name: Uniswap Foundation custody multisig
+    category: foundation
+    source: https://gov.uniswap.org/t/17499
+    note: >-
+      "The UF Custody multisig is: 0xe571...". Also named in the on-chain description of
+      GovernorBravo proposal 24 (https://etherscan.io/tx/0x9915654df9bee34644e0d587999420e0db823bedfa5523fd2b3ad22e97bb082b).
+  - address: "0x3B59C6d0034490093460787566dc5d6cE17F2f9C"
+    name: Uniswap Council (formerly Uniswap Accountability Committee) primary multisig
+    category: committee
+    source: https://gov.uniswap.org/t/26065
+    note: Also listed as "Primary UAC Wallet Address" in https://gov.uniswap.org/t/25467.
+
+  # --- Grant recipients --------------------------------------------------------------------
+  - address: "0x1C95930Dfc1139381265ce45B5f480F1EFae09A1"
+    name: DeFi Education Fund multisig
+    category: grant_recipient
+    source: https://etherscan.io/tx/0x2aa57e6c477f9d993a4cf7855a3de33ee17d7f5837d8802a9a696dee7611193f
+    note: '"Multisig wallet address" in the on-chain description of GovernorAlpha v2 proposal 1 (DeFi Education Fund).'
+  - address: "0xb39cb7Eb25CE07470Fb59F7548979Fae0Bb85824"
+    name: DeFi Education Fund UNI wallet (Coinbase)
+    category: grant_recipient
+    source: https://etherscan.io/tx/0x578ef4a4d1e544e0238e361fcd17adf9fe948c69884f41c0801a5dc960c8131c
+    note: Named in the on-chain description of GovernorBravo proposal 63.
+  - address: "0x3b560De4DB054B54945ec95C8c346d8901CfDAb9"
+    name: DeFi Education Fund UNI stream contract
+    category: grant_recipient
+    source: https://etherscan.io/tx/0x578ef4a4d1e544e0238e361fcd17adf9fe948c69884f41c0801a5dc960c8131c
+    note: >-
+      Proposal 63 says 500k UNI "will be locked up in a streaming contract"; this contract's
+      Etherscan-verified name is DEFLinearStreamCreator and it received 500k UNI in that execution.
+  - address: "0xF29Ff96aaEa6C9A1fBa851f74737f3c069d4f1a9"
+    name: Protocol Guild vesting contract
+    category: grant_recipient
+    source: https://etherscan.io/tx/0xe3c121fb9e031ad30bfac91b251d74d8061692d0663fc0475491832fa5b860c1
+    note: Linked as the "1 Year Vesting Contract" in the on-chain description of GovernorBravo proposal 22.
+
+  # --- Franchiser delegation contracts (UNI delegated out in 2022/2023, recalled in 2026) ---
+  - address: "0x3d4ACFD2C8b0641fb8db762179eE5A8dB385E573"
+    name: Franchiser delegation - Uniswap Foundation
+    category: delegation
+    source: https://gov.uniswap.org/t/26099
+  - address: "0xfB6b912cf7082031822F52E7d7EF59280f97A257"
+    name: Franchiser delegation - Anode (fka StableLab)
+    category: delegation
+    source: https://gov.uniswap.org/t/26099
+  - address: "0x8D2642Ec9d19A9333c8593ab7dE1Cc3Be44D2DBC"
+    name: Franchiser delegation - Axia Network (fka 404DAO)
+    category: delegation
+    source: https://gov.uniswap.org/t/26099
+  - address: "0x61BeD6a58c4dC592f1dC32f9eC0F67E49208405c"
+    name: Franchiser delegation - PGov
+    category: delegation
+    source: https://gov.uniswap.org/t/26099
+  - address: "0xe38e5dD6E11ba18450Cbdd518e8A7Eb5F4A17a11"
+    name: Franchiser delegation - Wintermute
+    category: delegation
+    source: https://gov.uniswap.org/t/26099
+  - address: "0xD57A44e75E863907fC1957B49B35893BF7874809"
+    name: Franchiser delegation - Keyrock
+    category: delegation
+    source: https://gov.uniswap.org/t/26099
+  - address: "0xA5bB68AC2d70B21F5b7d051542f4799954fB6087"
+    name: Franchiser delegation - KPK (fka Karpatkey)
+    category: delegation
+    source: https://gov.uniswap.org/t/26099
+  - address: "0xfe23b0DDCC9c78B21092e54b846a302C961EFab2"
+    name: Franchiser delegation - Atiselsts.eth
+    category: delegation
+    source: https://gov.uniswap.org/t/26099
+
+  # --- Other --------------------------------------------------------------------------------
+  - address: "0x000000000000000000000000000000000000dEaD"
+    name: Burn address (0x...dead)
+    category: burn
+    source: https://etherscan.io/tx/0xc3d0830b94a3f1648d7aba91ea6dba47aab4e4466b28f05d9a2dd7278444096e
+    note: 'The UNIfication proposal (GovernorBravo proposal 93) spec says "Burn 100m UNI: UNI.transfer(0xdead, 100_000_000 ether)".'
+  - address: "0x96855185279B526D7ad7e4A21B3f8d4f8Ca859da"
+    name: Cowrie (DUNI administrator)
+    category: governance
+    source: https://gov.uniswap.org/t/25770
+    note: 'Listed as "Party B: Cowrie" in the DUNI (Wyoming DUNA) governance proposal.'
+  - address: "0x4Dbd4fc535Ac27206064B68FfCf827b0A60BAB3f"
+    name: Arbitrum One Delayed Inbox (L1 -> L2 messages)
+    category: bridge
+    source: https://docs.arbitrum.io/build-decentralized-apps/reference/contract-addresses
+    note: Small ETH amounts sent here pay for cross-chain governance messages to Arbitrum.
+  - address: "0x7C8406384f7A5C147a6aDd16407803Be146147E4"
+    name: AeraVaultV2 contract
+    category: contract_name_only
+    source: https://etherscan.io/address/0x7C8406384f7A5C147a6aDd16407803Be146147E4#code
+    note: Etherscan-verified contract name only. The operator is not verified here.
