@@ -70,7 +70,7 @@ def tool_values(tools: TreasuryTools, spec: dict) -> list[tuple[str, str]]:
             spec.get("category"),
         )
         out = []
-        if spec.get("token"):
+        if spec.get("token") and not spec.get("usd_only"):
             amounts = [m for g in res.groups for m in g.amounts]
             out.append((amounts[0].amount if amounts else "0", spec["token"]))
         if spec.get("usd") or not spec.get("token"):

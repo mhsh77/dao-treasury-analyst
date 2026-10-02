@@ -151,7 +151,7 @@ class GroundTruth:
     def fn_flow(self, s: dict[str, Any]) -> tuple[list[dict[str, Any]], list[Any]]:
         rows = self.filtered(s)
         values = []
-        if s.get("token"):
+        if s.get("token") and not s.get("usd_only"):
             values.append(self.token_value(rows, s["token"]))
         if s.get("usd") or not s.get("token"):
             usd = self.usd_value(rows)

@@ -264,7 +264,7 @@ QUESTIONS = [
     q(
         "aggregation",
         "What was the USD value of UNI outflows in Q2 2024, at transfer-time prices?",
-        flow("out", "2024-04-01", "2024-06-30", "UNI", usd=True),
+        flow("out", "2024-04-01", "2024-06-30", "UNI", usd=True) | {"usd_only": True},
         [AGG, CMP],
     ),
     q(

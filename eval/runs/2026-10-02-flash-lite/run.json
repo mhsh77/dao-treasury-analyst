@@ -1,0 +1,9 @@
+{
+  "run_id": "2026-10-02-flash-lite",
+  "model": "gemini-3.5-flash-lite",
+  "provider": "gemini",
+  "recorded_with_git_sha": "0a31a27",
+  "recorded_at": "2026-10-02T15:37:39Z",
+  "questions_sha256": "9eb695ee59f809ea",
+  "ground_truth_sha256": "6642c18ac71be28e"
+}
