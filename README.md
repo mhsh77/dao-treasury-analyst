@@ -177,6 +177,46 @@ verified tokens and labels (each with a source URL), point `DAO_CONFIG` at the n
 ## Design decisions
 
 <!-- DECISIONS:START -->
+**Typed tools instead of free-form SQL.** A model writing SQL can get joins, units and
+decimals subtly wrong, and every query is a new, untested program. Six typed tools cover the
+question types, use exact integer arithmetic, and are unit-tested against a hand-computed
+dataset and cross-checked against an independent SQL ground truth on the real data. Typed
+arguments also let policy live in code: counterparty filters accept only labeled institutional
+addresses, so the tools cannot be used to profile a wallet. The cost is coverage. When a
+question needs a combination no tool computes (a total across three labels, "excluding the
+burn"), the agent has to say it can't, or it fails. Those failures show up in the error analysis.
+
+**A claim verifier instead of trusting the prompt.** Telling a model "only use tool numbers"
+is a request, not a guarantee. The verifier makes it a property of the system: every number
+the user sees was matched to a tool result it cites, with a compatible unit. Numbers the model
+derived itself are rejected by design, even when they happen to be right. That is deliberate:
+"correct but unverifiable" is not good enough for treasury reporting.
+
+**A pinned, recorded snapshot.** The data, the prices and the model's responses are all
+recorded. The end block is pinned in `fixtures/snapshot.json`. API responses (about 400 KB
+gzipped) are committed and replayed through the same parsing code. Model calls are stored in
+per-config cassettes. Anyone can clone the repo and recompute every number in this README
+offline, with no API keys, and get identical results.
+
+**An independent ground truth.** Expected answers come from plain SQL in `eval/ground_truth.py`,
+which imports none of the tool code. If the tools and the ground truth shared code, a bug in
+it would make both agree and the eval would be circular. A test checks that they agree on every
+figure both can compute.
+
+**Provider-agnostic LLM client.** The agent talks to one small `LLMClient` interface. A single
+OpenAI-compatible adapter covers Gemini, Groq and OpenRouter, so changing models is a config
+change. The eval uses one model for every config so the comparison is fair.
+
+**What did not work, or needed rework.**
+- DefiLlama's `/chart` endpoint silently skipped about 14% of days. Switching to
+  `/batchHistorical` with explicit midnight timestamps left two genuinely missing days.
+- The first agent version could explore until the step limit. The last round now offers
+  only `submit_answer`.
+- Gemini's free tier allows 20 requests per day for `gemini-3.5-flash`, far too few for an
+  eval of about 800 calls. The runs use `gemini-3.5-flash-lite`. Groq's free tier (8K tokens
+  per minute) cannot fit the naive baseline's prompt at all.
+- The prose check flags digits inside counterparty names and step numbers. That turned
+  correct answers into "partially verified" ones (see the error analysis).
 <!-- DECISIONS:END -->
 
 ## Limitations
