@@ -1,20 +1,29 @@
 """DefiLlama historical prices (no API key). One price per UTC day.
 
-The chart endpoint returns at most 500 points per request, so long windows are chunked.
-DefiLlama's daily points are not exactly at midnight; we bucket each point by its UTC date
-and keep the earliest point of each day.
+Definition used everywhere: the daily price for day D is DefiLlama's price nearest to
+D 00:00 UTC, searched within +/- SEARCH_WIDTH. Days with no point in that window have no
+price, and anything that needs one reports token amounts only.
+
+We use ``/batchHistorical`` with explicit midnight timestamps rather than ``/chart``: the
+chart endpoint skips days irregularly, which left ~14% of days unpriced.
 """
 
 from __future__ import annotations
 
+import json
 from datetime import UTC, date, datetime, timedelta
 
 from dao_analyst.data.fetch import JsonFetcher
 from dao_analyst.data.providers.base import DailyPrice
 
 NAMESPACE = "defillama"
-SOURCE = "DefiLlama coins API (daily, pinned snapshot)"
-MAX_SPAN_DAYS = 400
+SEARCH_WIDTH = "6h"
+SOURCE = f"DefiLlama coins API, price nearest 00:00 UTC (+/-{SEARCH_WIDTH}), pinned snapshot"
+DAYS_PER_REQUEST = 150
+
+
+def midnight(day: date) -> int:
+    return int(datetime(day.year, day.month, day.day, tzinfo=UTC).timestamp())
 
 
 class DefiLlamaPriceProvider:
@@ -23,26 +32,23 @@ class DefiLlamaPriceProvider:
         self._base_url = base_url
 
     def daily_prices(self, price_id: str, start: date, end: date) -> list[DailyPrice]:
-        by_day: dict[date, tuple[int, float]] = {}
-        chunk_start = start
-        while chunk_start <= end:
-            span = min(MAX_SPAN_DAYS, (end - chunk_start).days + 1)
-            ts = int(
-                datetime(
-                    chunk_start.year, chunk_start.month, chunk_start.day, tzinfo=UTC
-                ).timestamp()
-            )
+        days = [start + timedelta(days=i) for i in range((end - start).days + 1)]
+        out: list[DailyPrice] = []
+        for i in range(0, len(days), DAYS_PER_REQUEST):
+            chunk = days[i : i + DAYS_PER_REQUEST]
             data = self._fetcher.get(
                 NAMESPACE,
-                f"{self._base_url}/chart/{price_id}",
-                {"start": ts, "span": span, "period": "1d"},
+                f"{self._base_url}/batchHistorical",
+                {
+                    "coins": json.dumps({price_id: [midnight(d) for d in chunk]}),
+                    "searchWidth": SEARCH_WIDTH,
+                },
                 {},
             )
             points = data.get("coins", {}).get(price_id, {}).get("prices", [])
-            for p in points:
-                t = int(p["timestamp"])
-                day = datetime.fromtimestamp(t, tz=UTC).date()
-                if start <= day <= end and (day not in by_day or t < by_day[day][0]):
-                    by_day[day] = (t, float(p["price"]))
-            chunk_start += timedelta(days=span)
-        return [DailyPrice(price_id, d, by_day[d][1], SOURCE) for d in sorted(by_day)]
+            for day in chunk:
+                target = midnight(day)
+                best = min(points, key=lambda p: abs(int(p["timestamp"]) - target), default=None)
+                if best is not None and abs(int(best["timestamp"]) - target) <= 6 * 3600:
+                    out.append(DailyPrice(price_id, day, float(best["price"]), SOURCE))
+        return out
