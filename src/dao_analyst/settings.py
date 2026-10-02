@@ -19,6 +19,14 @@ class Settings(BaseSettings):
     eth_rpc_url: str | None = None
     defillama_base_url: str = "https://coins.llama.fi"
 
+    # LLM (any OpenAI-compatible provider; see dao_analyst.llm.client.PROVIDERS)
+    llm_provider: str = "gemini"
+    llm_model: str = "gemini-3.5-flash-lite"
+    groq_api_key: str | None = None
+    gemini_api_key: str | None = None
+    openrouter_api_key: str | None = None
+    audit_log: Path | None = Path("logs/audit.jsonl")
+
     # Requests per second; the Etherscan free tier currently allows 3/s.
     etherscan_rps: float = 2.5
     http_timeout_s: float = 30.0

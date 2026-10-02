@@ -42,5 +42,33 @@ def ingest(mode: FetchMode = FetchMode.REPLAY) -> None:
         typer.echo("Balance check: " + json.dumps(check))
 
 
+@app.command()
+def ask(
+    question: str,
+    provider: str | None = typer.Option(None, help="LLM provider (default from settings)"),
+    model: str | None = typer.Option(None, help="Model id (default from settings)"),
+    show_trace: bool = typer.Option(False, help="Print tool calls and verification"),
+) -> None:
+    """Ask the treasury agent a question (needs a built store: run `ingest` first)."""
+    from dao_analyst.agent.factory import build_agent, build_llm
+
+    settings = get_settings()
+    cfg = load_dao_config(settings.dao_config)
+    agent = build_agent(cfg, settings, build_llm(settings, provider=provider, model=model))
+    result = agent.answer(question)
+    typer.echo(result.text)
+    if show_trace:
+        typer.echo("\n--- trace ---")
+        for call in result.tool_calls:
+            typer.echo(json.dumps(call))
+        for v in result.verification:
+            typer.echo("verification: " + json.dumps(v))
+        typer.echo(
+            f"outcome={result.outcome.value} llm_calls={result.llm_calls} "
+            f"tokens={result.input_tokens}+{result.output_tokens} "
+            f"latency={result.latency_s:.1f}s"
+        )
+
+
 if __name__ == "__main__":
     app()
