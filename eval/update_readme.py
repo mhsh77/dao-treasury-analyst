@@ -30,7 +30,8 @@ def main() -> None:
     caption = (
         f"Run `{run_id}`: {out['metrics'][next(iter(out['metrics']))]['questions']} questions, "
         f"model `{run['model']}` ({run['provider']} free tier), recorded "
-        f"{run.get('recorded_at', 'n/a')}. Reproduce offline with `make eval`."
+        f"{run.get('recorded_at', 'n/a')} (last recording session). "
+        "Reproduce offline with `make eval`."
     )
     readme = ROOT / "README.md"
     text = readme.read_text()

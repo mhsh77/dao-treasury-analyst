@@ -31,7 +31,7 @@ def format_claim(claim: Claim) -> str:
     return f"{text} {claim.unit.upper()}"
 
 
-PLACEHOLDER = re.compile(r"(\$\s?)?\{(c\w*)\}(\s+(?:US\s?dollars|[A-Za-z]{2,10}))?")
+PLACEHOLDER = re.compile(r"(\$\s?)?\{(c\w*)\}(\s*%|\s+(?:US\s?dollars|[A-Za-z]{2,10}))?")
 
 
 def fill_placeholders(text: str, claims: list[Claim]) -> str:
@@ -46,7 +46,9 @@ def fill_placeholders(text: str, claims: list[Claim]) -> str:
         word = trailing.strip()
         unit = normalize_unit(claim.unit)
         # Counts and percents print without a unit, so their trailing noun must stay.
-        if word and unit not in {"count", "percent", "block"} and normalize_unit(word) == unit:
+        if word == "%" and unit == "percent":
+            trailing = ""  # "{c1}%": the formatted percent already ends in %
+        elif word and unit not in {"count", "percent", "block"} and normalize_unit(word) == unit:
             trailing = ""
         return format_claim(claim) + trailing
 

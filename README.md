@@ -17,12 +17,50 @@ ablation without the claim verifier. Same model and the same questions for every
 Ground truth comes from an independent SQL script, not from the agent's tools.
 
 <!-- RESULTS:START -->
+Run `2026-10-02-flash-lite`: 85 questions, model `gemini-3.5-flash-lite` (gemini free tier), recorded 2026-10-03T07:21:23Z (last recording session). Reproduce offline with `make eval`.
+
+| Metric | Naive baseline | Tools, no verifier | Full system |
+|---|---:|---:|---:|
+| Answer accuracy (answerable questions fully correct) | 6.5% | 88.7% | 88.7% |
+| Numeric accuracy (expected figures matched) | 5.3% | 91.5% | 92.5% |
+| Claim support rate (claims traceable to tool output) | 0.0% | 98.9% | 99.4% |
+| Correct abstain/refuse on unanswerable questions | 85.7% | 90.5% | 90.5% |
+| Wrongful refusals on answerable questions (lower is better) | 25.8% | 0.0% | 0.0% |
+| Refusal rate: non-allowlisted addresses | 100.0% | 100.0% | 100.0% |
+| Refusal rate: advice and price predictions | 100.0% | 100.0% | 100.0% |
+| Missing price handled (no invented USD) | 100.0% | 100.0% | 100.0% |
+| Tool selection accuracy | n/a | 100.0% | 100.0% |
+| Mean tool calls per question | 0.0 | 2.42 | 2.31 |
+| Model latency p50 (s) | 1.6 | 3.0 | 2.7 |
+| Model latency p95 (s) | 4.7 | 10.7 | 10.1 |
+| Mean input tokens per question | 139,356 | 12,857 | 13,739 |
+| Approx. cost per question at paid-tier prices (USD) | $0.0425 | $0.0050 | $0.0057 |
+| Errors (provider failures, step limit) | 0.0% | 0.0% | 1.2% |
 <!-- RESULTS:END -->
 
 Accuracy by question category:
 
 <!-- CATEGORIES:START -->
+| Category | Naive baseline | Tools, no verifier | Full system |
+|---|---:|---:|---:|
+| aggregation | 0.0% | 81.2% | 93.8% |
+| comparison | 0.0% | 90.0% | 90.0% |
+| lookup | 18.8% | 87.5% | 93.8% |
+| multistep | 0.0% | 90.0% | 60.0% |
+| ranking | 10.0% | 100.0% | 100.0% |
+| unanswerable | 87.0% | 91.3% | 91.3% |
 <!-- CATEGORIES:END -->
+
+**In short:**
+- Giving the model typed tools is what made it accurate: 88.7% of answerable questions fully
+  correct, versus 6.5% when the same model reads the raw transactions. In 18 of the baseline's
+  80 UNI/ETH figures, it forgot to divide by 10^18.
+- The claim verifier did **not** raise accuracy on this set; both tool configs score 88.7%.
+  With tools, the model's only untraceable numbers were two correct sums it computed itself,
+  which the verifier rejects by design. What the verifier buys is a guarantee: every figure
+  shown to a user is traceable to a cited tool result.
+- Refusals of advice, price predictions and non-allowlisted addresses were 100% in every
+  config, with no wrongful refusals in the tool configs.
 
 The [error analysis](#error-analysis) below explains the remaining failures. Raw outputs, per-question
 scores and the full report are in [`eval/runs/`](eval/runs/).
@@ -80,7 +118,7 @@ Requirements: Python 3.11+ and [uv](https://docs.astral.sh/uv/).
 make install
 make ingest        # build data/treasury.duckdb from committed fixtures (offline, no keys)
 make eval          # replay the recorded eval run offline and recompute every metric (no keys)
-make check         # lint, types, 130+ tests
+make check         # lint, types, 152 tests
 ```
 
 Ask a question (needs a free `GEMINI_API_KEY` or `GROQ_API_KEY` in `.env`, see
@@ -96,7 +134,9 @@ Start the Telegram bot (`TELEGRAM_BOT_TOKEN` from @BotFather):
 uv run dao-analyst bot                 # or: docker compose up -d --build
 ```
 
-Deployment notes for a small VPS: [docs/deploy.md](docs/deploy.md).
+Deployment notes for a small VPS: [docs/deploy.md](docs/deploy.md). A 2-3 minute walkthrough
+script is in [docs/demo-script.md](docs/demo-script.md), and a five-sentence introduction is in
+[docs/pitch-summary.md](docs/pitch-summary.md).
 
 Other commands:
 
@@ -172,6 +212,57 @@ verified tokens and labels (each with a source URL), point `DAO_CONFIG` at the n
   `make eval` replays them with no network or key and recomputes all metrics.
 
 <!-- ANALYSIS:START -->
+## Error analysis
+
+**What the numbers say.** One ground-truth spec (q026) was corrected after the run: it also
+required a UNI amount that the question does not ask for. That was a scoring bug, fixed by
+rescoring offline from the same cassettes; no agent output changed.
+
+- **Tools are the big win.** The naive baseline answered 6.5% of answerable questions
+  correctly; both tool-using configs answered 88.7%. The model's raw-data arithmetic was
+  wrong by orders of magnitude. For 2024 UNI outflows it claimed `925034000000000000000000`
+  UNI (it never divided by 10^18; the answer is 2,296,058). For UNI received from the vesters
+  it claimed 146,448,356.59 (the answer is 430,000,002). It also gave up on 16 answerable
+  questions (25.8%), saying the balance "is not pre-computed" in the data. All of this used a
+  139K-token prompt per question, about 10x the cost of the tool configs.
+- **The claim verifier did not improve accuracy on this question set. That is the honest
+  result of the ablation.** Both tool configs score 88.7%. Once the model had tools, it never
+  invented a number. In the no-verifier config, the only claims not traceable to tool output
+  were two pieces of correct arithmetic: a sum of three DeFi Education Fund transfers (q058)
+  and "2025 outflows excluding the burn" (q062). The verifier rejected exactly those, which
+  cost the full system those two questions (q062 ran out of steps after the rejection).
+  The verifier's value here is a guarantee rather than a score. Every figure shown to a user
+  in the full system matched a cited tool result: the 0.6% of submitted claims that failed
+  (one claim, q039) was withheld from the answer. Without the verifier, a wrong derived number
+  would reach the user unchecked; in this run none did.
+- **The verifier has false positives.** It triggered 18 retries in 85 questions, 10 of which
+  ended in a verified answer. Most were the prose check flagging list numbering ("1.", "2."),
+  the "404" in "Axia Network (fka 404DAO)", and the "0" left over from "0x...dead". In q053
+  that downgraded a correct answer to "partially verified", and in one retry the model
+  rewrote the label "fka 404DAO" as "fka DAO" to get past the check.
+- **Guardrails and abstention behaved as intended in every config.** All refusal-rate rows
+  are 100%, and no tool config wrongly refused an answerable question.
+
+**Remaining failures of the full system (9 of 85), by root cause.**
+
+| Root cause | Questions | Example |
+|---|---|---|
+| A sum no tool computes; the model correctly refused to add the parts itself, so the total was missing | q012, q058, q061 | "How much UNI came back in tx 0x2ece...?" listed 8 per-contract amounts but not the 12,500,001.19 total |
+| `compare_periods` `transfer_count` has no in/out filter, so the model counted both directions | q028, q052 | "Inbound transfers in 2022": answered 34 (in + out) instead of 29 |
+| The model derived a number itself, the verifier rejected it, and the model ran out of steps | q062 | "Excluding the burn, 2025 UNI outflows" (29,882,069) |
+| A prose-check false positive turned a correct answer into "partial" | q053 | The burn-address label lost its mention after the retry |
+| Answered a different question | q081 | Asked for the unverified UNI-V3 token's value, it reported the UNI position ($787M) |
+| Relative date interpreted against the snapshot | q064 | "Balance today" answered with the snapshot balance and its date. Scored strictly as a failure, although the prompt tells the model to interpret relative dates this way |
+
+**Fixes these point to, deliberately not applied before reporting** (applying them and
+re-running on the same questions would be tuning on the test set):
+
+1. Add a `direction` filter to `transfer_count` in `compare_periods`.
+2. Let `aggregate_flows` filter by several labels or exclude a category, so "total across
+   these addresses" and "excluding the burn" become tool calls instead of model arithmetic.
+3. Make the prose check ignore digits inside quoted label names and list markers.
+4. Treat "today"/"now" as after the snapshot (abstain) instead of mapping it to the snapshot
+   end.
 <!-- ANALYSIS:END -->
 
 ## Design decisions
@@ -222,6 +313,26 @@ change. The eval uses one model for every config so the comparison is fair.
 ## Limitations
 
 <!-- LIMITATIONS:START -->
+- **One DAO, one chain, one model.** The eval covers the Uniswap Timelock on Ethereum with
+  `gemini-3.5-flash-lite`. Other models, especially stronger ones, may make the verifier's
+  trade-off look different.
+- **85 questions, one run per config.** Differences of one or two questions (for example
+  between the two tool configs) are within run-to-run variation. Repeated runs would need more
+  free-tier quota (the free tier allows 500 requests per day for this model).
+- **The question set was written by the same person who built the tools.** The ground truth
+  is computed independently, but the questions may favor what the tools can express.
+- **Shared store.** The ground truth and the tools read the same normalized DuckDB store, so a
+  normalization bug would affect both. The on-chain balance cross-check at the snapshot block
+  is the guard against that; per-transfer correctness before the end block is not separately
+  checked.
+- **Token coverage.** Only ETH, UNI, USDC and USDT are verified. Positions held through other
+  protocols, NFTs (Uniswap v3 LP positions) and other chains are out of scope.
+- **Labels are a hand-curated snapshot** (25 addresses). Large recipients without an official
+  source, such as the address that received 20.3M UNI in March 2025, stay unlabeled.
+- **Prices** come from a single source (DefiLlama, daily). Flows are valued at the transfer
+  day's price, not the exact block.
+- **The verifier checks provenance, not intent.** A claim can be traceable and still answer the
+  wrong question (q081), and the prose check has false positives (see the error analysis).
 <!-- LIMITATIONS:END -->
 
 ## License and data

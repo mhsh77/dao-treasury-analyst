@@ -78,3 +78,10 @@ def test_render_formats_units_and_links() -> None:
 def test_unit_written_after_placeholder_is_not_duplicated() -> None:
     claims = [c("c1", "5", "UNI"), c("c2", "10", "USD")]
     assert fill_placeholders("{c1} UNI or ${c2} USD", claims) == "5 UNI or $10.00"
+
+
+def test_percent_sign_after_placeholder_is_not_duplicated() -> None:
+    assert (
+        fill_placeholders("up {c1}% this year", [c("c1", "12.5", "percent")])
+        == "up 12.5% this year"
+    )

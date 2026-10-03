@@ -1,0 +1,97 @@
+{
+  "run": {
+    "run_id": "2026-10-02-flash-lite",
+    "model": "gemini-3.5-flash-lite",
+    "provider": "gemini",
+    "recorded_with_git_sha": "5823423",
+    "recorded_at": "2026-10-03T07:21:23Z",
+    "questions_sha256": "4d1267f458849026",
+    "ground_truth_sha256": "a576c1073ca35a1a"
+  },
+  "metrics": {
+    "naive": {
+      "questions": 85,
+      "answer_accuracy": 0.0645,
+      "numeric_value_accuracy": 0.0532,
+      "claim_support_rate": 0.0,
+      "claims_total": 96,
+      "tool_selection_accuracy": null,
+      "mean_tool_calls": 0.0,
+      "correct_decline_rate": 0.8571,
+      "missing_price_handled": 1.0,
+      "wrongful_refusal_rate": 0.2581,
+      "refusal_rate_non_allowlisted": 1.0,
+      "refusal_rate_advice": 1.0,
+      "error_rate": 0.0,
+      "model_latency_p50_s": 1.55292407800016,
+      "model_latency_p95_s": 4.69278148880012,
+      "mean_input_tokens": 139356,
+      "mean_output_tokens": 266,
+      "cost_per_question_usd": 0.042472,
+      "accuracy_by_category": {
+        "aggregation": 0.0,
+        "comparison": 0.0,
+        "lookup": 0.1875,
+        "multistep": 0.0,
+        "ranking": 0.1,
+        "unanswerable": 0.8696
+      }
+    },
+    "tools_no_verifier": {
+      "questions": 85,
+      "answer_accuracy": 0.8871,
+      "numeric_value_accuracy": 0.9149,
+      "claim_support_rate": 0.9893,
+      "claims_total": 187,
+      "tool_selection_accuracy": 1.0,
+      "mean_tool_calls": 2.42,
+      "correct_decline_rate": 0.9048,
+      "missing_price_handled": 1.0,
+      "wrongful_refusal_rate": 0.0,
+      "refusal_rate_non_allowlisted": 1.0,
+      "refusal_rate_advice": 1.0,
+      "error_rate": 0.0,
+      "model_latency_p50_s": 3.035584684999776,
+      "model_latency_p95_s": 10.737038542600008,
+      "mean_input_tokens": 12857,
+      "mean_output_tokens": 448,
+      "cost_per_question_usd": 0.004977,
+      "accuracy_by_category": {
+        "aggregation": 0.8125,
+        "comparison": 0.9,
+        "lookup": 0.875,
+        "multistep": 0.9,
+        "ranking": 1.0,
+        "unanswerable": 0.913
+      }
+    },
+    "full": {
+      "questions": 85,
+      "answer_accuracy": 0.8871,
+      "numeric_value_accuracy": 0.9255,
+      "claim_support_rate": 0.9943,
+      "claims_total": 174,
+      "tool_selection_accuracy": 1.0,
+      "mean_tool_calls": 2.31,
+      "correct_decline_rate": 0.9048,
+      "missing_price_handled": 1.0,
+      "wrongful_refusal_rate": 0.0,
+      "refusal_rate_non_allowlisted": 1.0,
+      "refusal_rate_advice": 1.0,
+      "error_rate": 0.0118,
+      "model_latency_p50_s": 2.707923366000159,
+      "model_latency_p95_s": 10.148080490199753,
+      "mean_input_tokens": 13739,
+      "mean_output_tokens": 647,
+      "cost_per_question_usd": 0.00574,
+      "accuracy_by_category": {
+        "aggregation": 0.9375,
+        "comparison": 0.9,
+        "lookup": 0.9375,
+        "multistep": 0.6,
+        "ranking": 1.0,
+        "unanswerable": 0.913
+      }
+    }
+  }
+}
