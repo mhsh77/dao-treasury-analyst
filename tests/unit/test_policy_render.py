@@ -85,3 +85,24 @@ def test_percent_sign_after_placeholder_is_not_duplicated() -> None:
         fill_placeholders("up {c1}% this year", [c("c1", "12.5", "percent")])
         == "up 12.5% this year"
     )
+
+
+@pytest.mark.parametrize(
+    "q",
+    [
+        "What is the treasury's UNI balance today?",
+        "How much ETH does the treasury hold right now?",
+        "What is the current USDC balance?",
+    ],
+)
+def test_present_tense_questions_abstain_with_snapshot_date(q: str) -> None:
+    p = Policy({T}, ["Timelock"], snapshot_end="block 1 (2026-06-30 23:59 UTC)")
+    d = p.check(q)
+    assert d is not None and d.abstain and d.reason == "after_snapshot"
+    assert "2026-06-30" in d.message
+
+
+def test_snapshot_questions_are_not_caught_by_the_present_tense_rule() -> None:
+    p = Policy({T}, ["Timelock"], snapshot_end="block 1 (2026-06-30 23:59 UTC)")
+    assert p.check("What was the UNI balance at the end of the snapshot?") is None
+    assert p.check("What was the latest UNI outflow?") is None

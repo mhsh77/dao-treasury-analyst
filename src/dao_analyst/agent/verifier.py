@@ -203,8 +203,43 @@ ALLOWED_IN_PROSE = [
 NUMBER = re.compile(r"\d+(?:,\d{3})*(?:\.\d+)?")
 
 
-def prose_numbers(text: str, question: str) -> list[str]:
-    stripped = text
+LIST_MARKER = re.compile(r"(?m)^\s*(?:[-*]\s*)?\d{1,2}[.)]\s")
+
+
+NAME_KEYS = {"label", "counterparty_label", "from_label", "to_label", "name", "token", "symbol"}
+
+
+def quoted_phrases(calls: list[ToolCallRecord]) -> list[str]:
+    """Label and token names from tool results that contain digits ("fka 404DAO").
+    Copying a name into the prose is quoting, not stating a number. Only name fields
+    count; digits copied from notes or other text are still flagged."""
+    found: set[str] = set()
+
+    def walk(node: Any, key: str = "") -> None:
+        if isinstance(node, dict):
+            for k, v in node.items():
+                walk(v, k)
+        elif isinstance(node, list):
+            for v in node:
+                walk(v, key)
+        elif isinstance(node, str) and key in NAME_KEYS and re.search(r"\d", node):
+            found.add(node)
+            # Mixed letter/digit tokens ("404DAO", "0x...dead", "AeraVaultV2") so partial
+            # quotes of a name pass too; such tokens can never hide a bare number.
+            for token in re.findall(r"[\w.]+", node):
+                if re.search(r"\d", token) and re.search(r"[A-Za-z]", token):
+                    found.add(token)
+
+    for rec in calls:
+        if rec.result is not None:
+            walk(rec.result.model_dump(mode="json"))
+    return sorted(found, key=len, reverse=True)
+
+
+def prose_numbers(text: str, question: str, quoted: list[str] | None = None) -> list[str]:
+    stripped = LIST_MARKER.sub(" ", text)
+    for phrase in quoted or []:
+        stripped = stripped.replace(phrase, " ")
     for pattern in ALLOWED_IN_PROSE:
         stripped = re.sub(pattern, " ", stripped)
     allowed = set(NUMBER.findall(question))
@@ -268,9 +303,10 @@ def verify(answer: FinalAnswer, calls: list[ToolCallRecord], question: str) -> V
     missing = placeholders - set(ids)
     if missing:
         report.prose_issues.append(f"text references undefined claims: {sorted(missing)}")
-    stray = prose_numbers(answer.text, question)
+    quoted = quoted_phrases(calls)
+    stray = prose_numbers(answer.text, question, quoted)
     for extra in answer.caveats:
-        stray += prose_numbers(extra, question)
+        stray += prose_numbers(extra, question, quoted)
     if stray:
         report.prose_issues.append(
             f"numbers written directly in the text: {stray[:5]}; put them in claims and "

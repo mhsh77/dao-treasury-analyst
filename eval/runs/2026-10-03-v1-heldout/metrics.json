@@ -1,0 +1,41 @@
+{
+  "run": {
+    "run_id": "2026-10-03-v1-heldout",
+    "model": "gemini-3.5-flash-lite",
+    "provider": "gemini",
+    "recorded_with_git_sha": "35e38fa",
+    "recorded_at": "2026-10-03T09:57:18Z",
+    "questions_sha256": "1711494955f63cea",
+    "ground_truth_sha256": "c864f86a0d67803e"
+  },
+  "metrics": {
+    "full": {
+      "questions": 32,
+      "answer_accuracy": 0.76,
+      "numeric_value_accuracy": 0.8286,
+      "claim_support_rate": 0.9385,
+      "claims_total": 65,
+      "tool_selection_accuracy": 1.0,
+      "mean_tool_calls": 3.09,
+      "correct_decline_rate": 0.8333,
+      "missing_price_handled": 1.0,
+      "wrongful_refusal_rate": 0.0,
+      "refusal_rate_non_allowlisted": 1.0,
+      "refusal_rate_advice": 1.0,
+      "error_rate": 0.0,
+      "model_latency_p50_s": 3.6807788405004658,
+      "model_latency_p95_s": 7.4179499913502,
+      "mean_input_tokens": 21808,
+      "mean_output_tokens": 597,
+      "cost_per_question_usd": 0.008036,
+      "accuracy_by_category": {
+        "aggregation": 0.8333,
+        "comparison": 0.75,
+        "lookup": 0.8333,
+        "multistep": 0.6,
+        "ranking": 0.75,
+        "unanswerable": 0.8571
+      }
+    }
+  }
+}

@@ -23,18 +23,26 @@ ADVICE_PATTERNS = [
     r"\b(buy|sell) signal\b",
 ]
 ADVICE = [re.compile(p, re.IGNORECASE) for p in ADVICE_PATTERNS]
+# Questions about the present: the snapshot cannot answer them.
+NOW = re.compile(
+    r"\b(today|right now|as of now|at the moment|currently|current|now)\b", re.IGNORECASE
+)
 
 
 @dataclass(frozen=True)
 class PolicyDecision:
-    reason: str  # machine-readable: non_allowlisted_address | advice_or_prediction
+    reason: str  # non_allowlisted_address | advice_or_prediction | after_snapshot
     message: str
+    abstain: bool = False  # True: the data is missing (abstain), not out of policy (refuse)
 
 
 class Policy:
-    def __init__(self, allowlisted: set[str], treasury_names: list[str]) -> None:
+    def __init__(
+        self, allowlisted: set[str], treasury_names: list[str], snapshot_end: str | None = None
+    ) -> None:
         self._allowed = {a.lower() for a in allowlisted}
         self._names = treasury_names
+        self._snapshot_end = snapshot_end
 
     def check(self, question: str) -> PolicyDecision | None:
         outside = [a for a in ADDRESS.findall(question) if a.lower() not in self._allowed]
@@ -52,5 +60,13 @@ class Policy:
                 "I can't give investment advice, price predictions or trading recommendations. "
                 "I only report verified facts about the treasury's on-chain activity, for "
                 "example holdings, flows and transactions up to the snapshot.",
+            )
+        if self._snapshot_end and NOW.search(question):
+            return PolicyDecision(
+                "after_snapshot",
+                f"My data is a pinned on-chain snapshot that ends at {self._snapshot_end}, so I "
+                "can't report today's or current values. Ask about a date up to then, for "
+                'example "at the end of the snapshot".',
+                abstain=True,
             )
         return None

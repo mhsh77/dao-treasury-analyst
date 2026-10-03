@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -28,7 +29,9 @@ class Settings(BaseSettings):
     audit_log: Path | None = Path("logs/audit.jsonl")
 
     # Telegram bot
-    telegram_bot_token: str | None = None
+    telegram_bot_token: str | None = Field(
+        None, validation_alias=AliasChoices("TELEGRAM_BOT_TOKEN", "DAO_TELEGRAM_BOT_API")
+    )
     telegram_allowed_users: str = ""  # comma-separated numeric ids; empty = public
     rate_limit_requests: int = 5
     rate_limit_window_s: float = 600.0
@@ -41,4 +44,4 @@ class Settings(BaseSettings):
 
 
 def get_settings() -> Settings:
-    return Settings()
+    return Settings()  # type: ignore[call-arg]  # aliased fields are read from the env

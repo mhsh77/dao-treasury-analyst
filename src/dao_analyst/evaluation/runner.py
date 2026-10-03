@@ -84,6 +84,10 @@ def claim_support(result: dict[str, Any], registry: ToolRegistry) -> tuple[int, 
     return len(claims), supported
 
 
+class ReplayMismatchError(RuntimeError):
+    """Replay needed a model call the cassette does not have; nothing is overwritten."""
+
+
 def stable_record(qid: str, result: AgentResult) -> dict[str, Any]:
     """Result without wall-clock timings, so replaying a run rewrites identical files.
     Latency metrics use ``model_latency_s``, which is recorded in the cassette."""
@@ -122,6 +126,13 @@ def run_config(
         try:
             result = agent.answer(q["question"])
         except CassetteMissingError as exc:
+            if replay:
+                raise ReplayMismatchError(
+                    f"{run_dir.name}/{name}: {q['id']} needs a model call that is not in the "
+                    "cassette. The agent's prompts or tool schemas changed since this run was "
+                    "recorded; replay it from the commit that recorded it (run.json: "
+                    "recorded_with_git_sha / code_commit)."
+                ) from exc
             result = AgentResult(
                 question=q["question"],
                 config=name,
@@ -156,11 +167,22 @@ def run_eval(
     model: str | None = None,
     provider: str | None = None,
     min_interval_s: float = 4.0,
+    question_set: str = "questions",
 ) -> dict[str, Any]:
+    """``question_set`` names ``eval/<set>.jsonl``; its ground truth is the matching
+    ``eval/ground_truth<suffix>.json`` (``questions_heldout`` -> ``ground_truth_heldout``)."""
     run_dir = eval_dir / "runs" / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
-    questions_path = eval_dir / "questions.jsonl"
-    gt_path = eval_dir / "ground_truth.json"
+    meta_path = run_dir / "run.json"
+    if meta_path.exists():  # a recorded run keeps the question set it was recorded with
+        question_set = json.loads(meta_path.read_text()).get("question_set", question_set)
+    questions_path = eval_dir / f"{question_set}.jsonl"
+    gt_path = eval_dir / f"ground_truth{question_set.removeprefix('questions')}.json"
+    if replay:  # replay only what this run actually recorded
+        recorded = [c for c in configs if (run_dir / f"results_{c}.jsonl").exists()]
+        if recorded != configs:
+            log.info("eval.replay_configs", recorded=recorded, requested=configs)
+        configs = recorded
     questions = load_jsonl(questions_path)
     if only:
         questions = [q for q in questions if q["id"] in set(only)]
@@ -178,6 +200,7 @@ def run_eval(
                 "provider": provider,
                 "recorded_with_git_sha": git_sha(),
                 "recorded_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                "question_set": question_set,
                 "questions_sha256": sha256(questions_path),
                 "ground_truth_sha256": sha256(gt_path),
             }

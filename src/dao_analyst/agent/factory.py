@@ -45,8 +45,10 @@ def build_llm(
 
 
 def build_policy(cfg: DaoConfig, registry: ToolRegistry) -> Policy:
-    allowed = set(cfg.treasury_set) | set(registry.tools.data.labels)
-    return Policy(allowed, [t.name for t in cfg.treasury_addresses])
+    data = registry.tools.data
+    allowed = set(cfg.treasury_set) | set(data.labels)
+    end = f"block {data.end_block} ({data.end_time:%Y-%m-%d %H:%M} UTC)"
+    return Policy(allowed, [t.name for t in cfg.treasury_addresses], snapshot_end=end)
 
 
 def build_agent(
