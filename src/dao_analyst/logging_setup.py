@@ -10,6 +10,7 @@ import structlog
 
 def configure_logging(level: str = "INFO", *, json: bool = True) -> None:
     logging.basicConfig(stream=sys.stderr, level=level, format="%(message)s")
+    logging.getLogger("httpx").setLevel(logging.WARNING)
     renderer: structlog.typing.Processor = (
         structlog.processors.JSONRenderer() if json else structlog.dev.ConsoleRenderer()
     )

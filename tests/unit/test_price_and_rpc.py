@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from datetime import UTC, date, datetime
 from typing import Any
 
@@ -12,23 +13,36 @@ def ts(d: date, hour: int = 0) -> int:
     return int(datetime(d.year, d.month, d.day, hour, tzinfo=UTC).timestamp())
 
 
-def test_prices_are_chunked_and_bucketed_by_utc_day() -> None:
+def test_prices_use_point_nearest_midnight_and_chunk_requests() -> None:
     def handler(ns: str, url: str, params: dict[str, Any]) -> dict[str, Any]:
-        start = params["start"]
-        points = [
-            {"timestamp": start + i * 86_400 + 3600, "price": 1.0 + i}
-            for i in range(params["span"])
-        ]
-        points.append({"timestamp": start + 7200, "price": 99.0})  # later point, same day
+        assert url.endswith("/batchHistorical")
+        stamps = json.loads(params["coins"])["coingecko:uniswap"]
+        points = []
+        for i, t in enumerate(stamps):
+            if i % 10 == 9:
+                continue  # a day DefiLlama has no data for
+            points.append({"timestamp": t - 1, "price": 1.0 + i})  # 23:59:59 the day before
+            points.append({"timestamp": t + 5 * 3600, "price": 99.0})  # farther from midnight
         return {"coins": {"coingecko:uniswap": {"prices": points}}}
 
     f = FakeFetcher(handler)
     prices = DefiLlamaPriceProvider(f).daily_prices(
-        "coingecko:uniswap", date(2024, 1, 1), date(2025, 12, 31)
+        "coingecko:uniswap", date(2024, 1, 1), date(2024, 12, 31)
     )
-    assert len(f.calls) == 2  # 731 days > 400-day chunk
-    assert len(prices) == 731
-    assert prices[0].day == date(2024, 1, 1) and prices[0].usd == 1.0  # earliest point wins
+    assert len(f.calls) == 3  # 366 days in chunks of 150
+    by_day = {p.day: p.usd for p in prices}
+    assert by_day[date(2024, 1, 1)] == 1.0  # nearest point wins, credited to the asked day
+    assert date(2024, 1, 10) not in by_day  # missing stays missing, no interpolation
+    assert len(prices) == 366 - (15 + 15 + 6)  # every 10th day of each chunk is missing
+
+
+def test_points_outside_search_width_are_ignored() -> None:
+    f = FakeFetcher(
+        lambda ns, url, params: {
+            "coins": {"x": {"prices": [{"timestamp": ts(date(2024, 1, 1), 7), "price": 5.0}]}}
+        }
+    )
+    assert DefiLlamaPriceProvider(f).daily_prices("x", date(2024, 1, 1), date(2024, 1, 1)) == []
 
 
 def test_balance_of_call_encoding() -> None:

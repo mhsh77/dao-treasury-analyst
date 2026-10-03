@@ -1,0 +1,904 @@
+{
+ "q001": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "272134858.47907041001"
+   }
+  ]
+ },
+ "q002": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "369506042.287209538315428714"
+   }
+  ]
+ },
+ "q003": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "173403155.204718417047184169"
+   }
+  ]
+ },
+ "q004": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "383266633.530740740750740737"
+   },
+   {
+    "unit": "USD",
+    "value": "3389646562.64"
+   }
+  ]
+ },
+ "q005": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "ETH",
+    "value": "0.230707525462629109"
+   }
+  ]
+ },
+ "q006": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "USDC",
+    "value": "125.383008"
+   }
+  ]
+ },
+ "q007": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "USDT",
+    "value": "1002.280283"
+   }
+  ]
+ },
+ "q008": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "USD",
+    "value": "787132994.25"
+   }
+  ]
+ },
+ "q009": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "369634857.290100000009999999"
+   }
+  ]
+ },
+ "q010": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "100000000"
+   }
+  ]
+ },
+ "q011": {
+  "mentions": [
+   [
+    "Uniswap Foundation"
+   ]
+  ],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "10685984.71"
+   }
+  ]
+ },
+ "q012": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "12500001.188970410000000001"
+   }
+  ]
+ },
+ "q013": {
+  "mentions": [
+   [
+    "AeraVault"
+   ]
+  ],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "7588532"
+   }
+  ]
+ },
+ "q014": {
+  "mentions": [
+   [
+    "Uniswap Council (formerly Uniswap Accountability Committee) primary multisig",
+    "0x3b59c6d0034490093460787566dc5d6ce17f2f9c"
+   ]
+  ],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "549124"
+   }
+  ]
+ },
+ "q015": {
+  "mentions": [
+   [
+    "Franchiser delegation - Uniswap Foundation",
+    "0x3d4acfd2c8b0641fb8db762179ee5a8db385e573"
+   ]
+  ],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "2500001.188270410000000001"
+   }
+  ]
+ },
+ "q016": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "100000000"
+   }
+  ]
+ },
+ "q017": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "2296058"
+   }
+  ]
+ },
+ "q018": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "129882069"
+   }
+  ]
+ },
+ "q019": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "430000002"
+   }
+  ]
+ },
+ "q020": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "126692880.105276509386098429"
+   }
+  ]
+ },
+ "q021": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "13142986.71"
+   }
+  ]
+ },
+ "q022": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "2500000"
+   }
+  ]
+ },
+ "q023": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "1219058"
+   }
+  ]
+ },
+ "q024": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "10000000"
+   }
+  ]
+ },
+ "q025": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "12500001.188970410000000001"
+   }
+  ]
+ },
+ "q026": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "USD",
+    "value": "12382228.10"
+   }
+  ]
+ },
+ "q027": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "count",
+    "value": "13"
+   }
+  ]
+ },
+ "q028": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "count",
+    "value": "29"
+   }
+  ]
+ },
+ "q029": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "USDC",
+    "value": "135.383008"
+   }
+  ]
+ },
+ "q030": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "20685984.71"
+   }
+  ]
+ },
+ "q031": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "ETH",
+    "value": "0.02314835"
+   }
+  ]
+ },
+ "q032": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "2500001.188970410000000001"
+   }
+  ]
+ },
+ "q033": {
+  "mentions": [
+   [
+    "Burn address (0x...dead)",
+    "0x000000000000000000000000000000000000dead"
+   ],
+   [
+    "0x5069a64bc6616dec1584ee0500b7813a9b680f7e"
+   ],
+   [
+    "Uniswap Foundation custody multisig",
+    "0xe571dc7a558bb6d68ffe264c3d7bb98b0c6c73fc"
+   ],
+   [
+    "0xaba63748c4b4def4a3319c3a29fe4829029d926f"
+   ],
+   [
+    "AeraVaultV2 contract",
+    "0x7c8406384f7a5c147a6add16407803be146147e4"
+   ]
+  ],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "100000000"
+   },
+   {
+    "unit": "UNI",
+    "value": "20320405"
+   },
+   {
+    "unit": "UNI",
+    "value": "13142986.71"
+   },
+   {
+    "unit": "UNI",
+    "value": "10000000"
+   },
+   {
+    "unit": "UNI",
+    "value": "7588532"
+   }
+  ]
+ },
+ "q034": {
+  "mentions": [
+   [
+    "Burn address (0x...dead)",
+    "0x000000000000000000000000000000000000dead"
+   ],
+   [
+    "0x5069a64bc6616dec1584ee0500b7813a9b680f7e"
+   ],
+   [
+    "AeraVaultV2 contract",
+    "0x7c8406384f7a5c147a6add16407803be146147e4"
+   ]
+  ],
+  "values": [
+   {
+    "unit": "USD",
+    "value": "582694237.37"
+   },
+   {
+    "unit": "USD",
+    "value": "140007590.45"
+   },
+   {
+    "unit": "USD",
+    "value": "52284985.48"
+   }
+  ]
+ },
+ "q035": {
+  "mentions": [
+   [
+    "Uniswap Council (formerly Uniswap Accountability Committee) primary multisig",
+    "0x3b59c6d0034490093460787566dc5d6ce17f2f9c"
+   ],
+   [
+    "DeFi Education Fund UNI stream contract",
+    "0x3b560de4db054b54945ec95c8c346d8901cfdab9"
+   ],
+   [
+    "DeFi Education Fund UNI wallet (Coinbase)",
+    "0xb39cb7eb25ce07470fb59f7548979fae0bb85824"
+   ]
+  ],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "1219058"
+   },
+   {
+    "unit": "UNI",
+    "value": "500000"
+   },
+   {
+    "unit": "UNI",
+    "value": "500000"
+   }
+  ]
+ },
+ "q036": {
+  "mentions": [
+   [
+    "Franchiser delegation - Uniswap Foundation",
+    "0x3d4acfd2c8b0641fb8db762179ee5a8db385e573"
+   ]
+  ],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "2500001.188270410000000001"
+   }
+  ]
+ },
+ "q037": {
+  "mentions": [
+   [
+    "UNI treasury vester 1 (year 1)",
+    "0x4750c43867ef5f89869132eccf19b9b6c4286e1a"
+   ],
+   [
+    "UNI treasury vester 2 (year 2)",
+    "0xe3953d9d317b834592ab58ab2c7a6ad22b54075d"
+   ],
+   [
+    "UNI treasury vester 3 (year 3)",
+    "0x4b4e140d1f131fdad6fb59c13af796fd194e4135"
+   ],
+   [
+    "UNI treasury vester 4 (year 4)",
+    "0x3d30b1ab88d487b0f3061f40de76845bec3f1e94"
+   ]
+  ],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "172000000"
+   },
+   {
+    "unit": "UNI",
+    "value": "129000002"
+   },
+   {
+    "unit": "UNI",
+    "value": "86000000"
+   },
+   {
+    "unit": "UNI",
+    "value": "43000000"
+   }
+  ]
+ },
+ "q038": {
+  "mentions": [
+   [
+    "Franchiser delegation - Anode (fka StableLab)",
+    "0xfb6b912cf7082031822f52e7d7ef59280f97a257"
+   ]
+  ],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "2499858"
+   }
+  ]
+ },
+ "q039": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "10685984.71"
+   },
+   {
+    "unit": "UNI",
+    "value": "2499858"
+   },
+   {
+    "unit": "UNI",
+    "value": "2250000"
+   }
+  ]
+ },
+ "q040": {
+  "mentions": [
+   [
+    "Arbitrum One Delayed Inbox (L1 -> L2 messages)",
+    "0x4dbd4fc535ac27206064b68ffcf827b0a60bab3f"
+   ]
+  ],
+  "values": [
+   {
+    "unit": "ETH",
+    "value": "0.02314835"
+   }
+  ]
+ },
+ "q041": {
+  "mentions": [
+   [
+    "2024-05",
+    "May"
+   ]
+  ],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "1194155"
+   }
+  ]
+ },
+ "q042": {
+  "mentions": [
+   [
+    "2025-12",
+    "December"
+   ]
+  ],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "100034615"
+   }
+  ]
+ },
+ "q043": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "2296058"
+   },
+   {
+    "unit": "UNI",
+    "value": "129882069"
+   }
+  ]
+ },
+ "q044": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "126692880.105276509386098429"
+   },
+   {
+    "unit": "UNI",
+    "value": "148966500.319381024870476908"
+   }
+  ]
+ },
+ "q045": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "369506042.287209538315428714"
+   },
+   {
+    "unit": "UNI",
+    "value": "399516926.290000000009999999"
+   }
+  ]
+ },
+ "q046": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "count",
+    "value": "10"
+   },
+   {
+    "unit": "count",
+    "value": "13"
+   }
+  ]
+ },
+ "q047": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "549124"
+   },
+   {
+    "unit": "UNI",
+    "value": "28010981"
+   }
+  ]
+ },
+ "q048": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "percent",
+    "value": "-88.91"
+   }
+  ]
+ },
+ "q049": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "173403155.204718417047184169"
+   },
+   {
+    "unit": "UNI",
+    "value": "316402449.524099441917661076"
+   }
+  ]
+ },
+ "q050": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "USD",
+    "value": "105774756.18"
+   },
+   {
+    "unit": "USD",
+    "value": "22703239.63"
+   }
+  ]
+ },
+ "q051": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "0.0001"
+   },
+   {
+    "unit": "UNI",
+    "value": "12500001.188970410000000001"
+   }
+  ]
+ },
+ "q052": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "count",
+    "value": "14"
+   },
+   {
+    "unit": "count",
+    "value": "13"
+   }
+  ]
+ },
+ "q053": {
+  "mentions": [
+   [
+    "Burn address (0x...dead)",
+    "0x000000000000000000000000000000000000dead"
+   ]
+  ],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "100000000"
+   },
+   {
+    "unit": "UNI",
+    "value": "269634857.290100000009999999"
+   }
+  ]
+ },
+ "q054": {
+  "mentions": [
+   [
+    "Uniswap Foundation custody multisig",
+    "0xe571dc7a558bb6d68ffe264c3d7bb98b0c6c73fc"
+   ]
+  ],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "10685984.71"
+   },
+   {
+    "unit": "UNI",
+    "value": "13142986.71"
+   }
+  ]
+ },
+ "q055": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "12500000.000000000000000001"
+   },
+   {
+    "unit": "UNI",
+    "value": "12500001.188970410000000001"
+   }
+  ]
+ },
+ "q056": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "399516926.290000000009999999"
+   },
+   {
+    "unit": "USD",
+    "value": "5321565458.18"
+   },
+   {
+    "unit": "UNI",
+    "value": "2296058"
+   }
+  ]
+ },
+ "q057": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "count",
+    "value": "7"
+   },
+   {
+    "unit": "UNI",
+    "value": "10000000"
+   }
+  ]
+ },
+ "q058": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "2000000"
+   }
+  ]
+ },
+ "q059": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "382441"
+   },
+   {
+    "unit": "count",
+    "value": "8"
+   }
+  ]
+ },
+ "q060": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "173403155.204718417047184169"
+   },
+   {
+    "unit": "UNI",
+    "value": "148966500.319381024860476908"
+   }
+  ]
+ },
+ "q061": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "ETH",
+    "value": "0.02004"
+   },
+   {
+    "unit": "ETH",
+    "value": "0.02004"
+   }
+  ]
+ },
+ "q062": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "29882069"
+   }
+  ]
+ },
+ "q063": {
+  "mentions": [],
+  "values": []
+ },
+ "q064": {
+  "mentions": [],
+  "values": []
+ },
+ "q065": {
+  "mentions": [],
+  "values": []
+ },
+ "q066": {
+  "mentions": [],
+  "values": []
+ },
+ "q067": {
+  "mentions": [],
+  "values": []
+ },
+ "q068": {
+  "mentions": [],
+  "values": []
+ },
+ "q069": {
+  "mentions": [],
+  "values": []
+ },
+ "q070": {
+  "mentions": [],
+  "values": []
+ },
+ "q071": {
+  "mentions": [],
+  "values": []
+ },
+ "q072": {
+  "mentions": [],
+  "values": []
+ },
+ "q073": {
+  "mentions": [],
+  "values": []
+ },
+ "q074": {
+  "mentions": [],
+  "values": []
+ },
+ "q075": {
+  "mentions": [],
+  "values": []
+ },
+ "q076": {
+  "mentions": [],
+  "values": []
+ },
+ "q077": {
+  "mentions": [],
+  "values": []
+ },
+ "q078": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "297567467.788939624566062908"
+   }
+  ]
+ },
+ "q079": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "297567467.788939624566062908"
+   }
+  ]
+ },
+ "q080": {
+  "mentions": [],
+  "values": []
+ },
+ "q081": {
+  "mentions": [],
+  "values": []
+ },
+ "q082": {
+  "mentions": [],
+  "values": []
+ },
+ "q083": {
+  "mentions": [],
+  "values": []
+ },
+ "q084": {
+  "mentions": [],
+  "values": []
+ },
+ "q085": {
+  "mentions": [],
+  "values": []
+ }
+}
