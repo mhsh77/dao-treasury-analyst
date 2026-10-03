@@ -17,7 +17,7 @@ ablation without the claim verifier. Same model and the same questions for every
 Ground truth comes from an independent SQL script, not from the agent's tools.
 
 <!-- RESULTS:START -->
-Run `2026-10-02-flash-lite`: 85 questions, model `gemini-3.5-flash-lite` (gemini free tier), recorded 2026-10-03T07:21:23Z (last recording session). Reproduce offline with `make eval`.
+Run `2026-10-02-flash-lite`: 85 questions, model `gemini-3.5-flash-lite` (gemini free tier), recorded 2026-10-03T07:21:23Z (last recording session). Reproduce offline at commit `35e38fa` with `make eval` (later commits changed the prompts and tool schemas, so the v1 cassettes only replay there).
 
 | Metric | Naive baseline | Tools, no verifier | Full system |
 |---|---:|---:|---:|
@@ -64,6 +64,65 @@ Accuracy by question category:
 
 The [error analysis](#error-analysis) below explains the remaining failures. Raw outputs, per-question
 scores and the full report are in [`eval/runs/`](eval/runs/).
+
+## Follow-up: v1 fixes, evaluated on held-out questions
+
+The [error analysis](#error-analysis) pointed to four fixes. They were applied after the v1
+run (v2), and evaluated on **32 new held-out questions**
+([`eval/questions_heldout.jsonl`](eval/questions_heldout.jsonl), new phrasings and different
+facts) rather than on the 85 questions that motivated them. Those questions were written
+after v1's failures were known but before any v2 run. The v1 code was run on the same held-out
+questions for a fair before/after comparison.
+
+1. `compare_periods` takes a `direction` for transfer counts.
+2. `aggregate_flows` and `list_transfers` take `label_contains` (every address of one
+   organization) and `exclude_categories` (for example, leave out the burn).
+3. The verifier's prose check ignores list markers and digits inside label names from tool
+   results ("fka 404DAO", "vester 2 (year 2)"). Digits anywhere else are still rejected.
+4. Questions about "today", "now" or "current" values abstain and state the snapshot end.
+
+<!-- HELDOUT:START -->
+32 held-out questions, same model (`gemini-3.5-flash-lite`). Reproduce v2 offline with `make eval RUN=2026-10-03-v2-heldout`.
+
+| Metric | Naive baseline | v1 full system | v2 full system |
+|---|---:|---:|---:|
+| Answer accuracy (answerable questions fully correct) | 4.0% | 76.0% | 88.0% |
+| Numeric accuracy (expected figures matched) | 8.6% | 82.9% | 91.4% |
+| Claim support rate | 0.0% | 93.8% | 100.0% |
+| Correct abstain/refuse on unanswerable questions | 83.3% | 83.3% | 100.0% |
+| Wrongful refusals on answerable questions | 24.0% | 0.0% | 0.0% |
+| Refusal rate: advice and price predictions | 100.0% | 100.0% | 100.0% |
+| Refusal rate: non-allowlisted addresses | 100.0% | 100.0% | 100.0% |
+| Mean tool calls per question | 0.0 | 3.09 | 2.41 |
+| Errors | 0.0% | 0.0% | 0.0% |
+<!-- HELDOUT:END -->
+
+<!-- HELDOUT_ANALYSIS:START -->
+Every question whose result changed between v1 and v2 (one run each):
+
+| Question | v1 → v2 | Cause |
+|---|---|---|
+| h005 | wrong → right | Fix 2: `label_contains` totalled both Uniswap Foundation addresses in one tx |
+| h012 | wrong → right | Fix 2: `exclude_categories: ["burn"]` instead of model arithmetic |
+| h018 | wrong → right | Fix 1: outbound-only transfer counts |
+| h014 | partial → right | Fix 3: v1 flagged the "2" in the label "UNI treasury vester 2 (year 2)" |
+| h026 | answered → abstained | Fix 4: "right now" abstains with the snapshot end date |
+| h004 | right → wrong | Not a fix: v2 took a different tool path and returned the two 500K transfers instead of their 1M total |
+
+**What to take from it.** Each of the five gains maps to a specific fix; the one regression is
+run-to-run variation. With 25 answerable questions and one run per config, the 12-point gain
+is three questions, so treat it as directional rather than precise.
+
+**Remaining v2 failures (3 of 32).** In two (h004, h021) the model grouped by counterparty
+and reported per-address amounts instead of the total; an `aggregate_flows` result that always
+includes a total across groups would remove that step. In h023 it read "the largest UNI
+outflow" as the counterparty with the largest total rather than the largest single transfer.
+That question is genuinely ambiguous, and the model named the right recipient.
+
+The tools-without-verifier ablation on the held-out set stopped at the Gemini free-tier
+daily cap, with 26 of 32 questions recorded. It will be completed and added to this table
+after the quota resets.
+<!-- HELDOUT_ANALYSIS:END -->
 
 ## What it does
 
@@ -117,7 +176,7 @@ Requirements: Python 3.11+ and [uv](https://docs.astral.sh/uv/).
 ```bash
 make install
 make ingest        # build data/treasury.duckdb from committed fixtures (offline, no keys)
-make eval          # replay the recorded eval run offline and recompute every metric (no keys)
+make eval          # replay the latest recorded eval run offline, recompute every metric (no keys)
 make check         # lint, types, 152 tests
 ```
 
@@ -254,8 +313,10 @@ rescoring offline from the same cassettes; no agent output changed.
 | Answered a different question | q081 | Asked for the unverified UNI-V3 token's value, it reported the UNI position ($787M) |
 | Relative date interpreted against the snapshot | q064 | "Balance today" answered with the snapshot balance and its date. Scored strictly as a failure, although the prompt tells the model to interpret relative dates this way |
 
-**Fixes these point to, deliberately not applied before reporting** (applying them and
-re-running on the same questions would be tuning on the test set):
+**Fixes these point to.** They were deliberately not applied before reporting v1 (applying
+them and re-running on the same questions would be tuning on the test set). They are applied
+in v2 and evaluated on held-out questions; see the
+[follow-up](#follow-up-v1-fixes-evaluated-on-held-out-questions).
 
 1. Add a `direction` filter to `transfer_count` in `compare_periods`.
 2. Let `aggregate_flows` filter by several labels or exclude a category, so "total across

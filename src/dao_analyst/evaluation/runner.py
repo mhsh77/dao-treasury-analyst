@@ -178,6 +178,11 @@ def run_eval(
         question_set = json.loads(meta_path.read_text()).get("question_set", question_set)
     questions_path = eval_dir / f"{question_set}.jsonl"
     gt_path = eval_dir / f"ground_truth{question_set.removeprefix('questions')}.json"
+    if replay:  # replay only what this run actually recorded
+        recorded = [c for c in configs if (run_dir / f"results_{c}.jsonl").exists()]
+        if recorded != configs:
+            log.info("eval.replay_configs", recorded=recorded, requested=configs)
+        configs = recorded
     questions = load_jsonl(questions_path)
     if only:
         questions = [q for q in questions if q["id"] in set(only)]
