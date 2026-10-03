@@ -166,7 +166,7 @@ class Agent:
     def _run(self, question: str, result: AgentResult) -> None:
         self.registry.reset()
         if self.config.guardrails and (decision := self.policy.check(question)):
-            result.outcome = Outcome.REFUSE
+            result.outcome = Outcome.ABSTAIN if decision.abstain else Outcome.REFUSE
             result.refusal_reason = decision.reason
             result.missing = decision.message
             result.text = decision.message

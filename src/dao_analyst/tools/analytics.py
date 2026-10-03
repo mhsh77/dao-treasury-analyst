@@ -330,6 +330,8 @@ class TreasuryTools:
         limit: int = 20,
         sort: SortBy = SortBy.TIME_ASC,
         include_unverified: bool = False,
+        label_contains: str | None = None,
+        exclude_categories: list[str] | None = None,
     ) -> TransferList:
         if not 1 <= limit <= MAX_LIST_LIMIT:
             raise ToolInputError(f"limit must be between 1 and {MAX_LIST_LIMIT}")
@@ -340,6 +342,7 @@ class TreasuryTools:
                 raise ToolInputError("min_amount needs a token (amounts are per token)")
             min_raw = int(parse_decimal(min_amount, "min_amount").scaleb(tok.decimals))
         cp = self._counterparty(counterparty) if counterparty else None
+        cp_ok = self._counterparty_filter(counterparty_category, label_contains, exclude_categories)
         result = TransferList(
             tool="list_transfers",
             evidence=Evidence(block_range=(0, 0)),
@@ -358,10 +361,7 @@ class TreasuryTools:
             and (tok is None or r.token_address == tok.address)
             and (min_raw is None or r.raw_amount >= min_raw)
             and (cp is None or r.counterparty == cp)
-            and (
-                counterparty_category is None
-                or self._category(r.counterparty) == counterparty_category
-            )
+            and cp_ok(r.counterparty)
             and self._in_range(r, rng)
         ]
         if sort is SortBy.TIME_DESC:
@@ -405,8 +405,11 @@ class TreasuryTools:
         token: str | None = None,
         date_range: DateRange | None = None,
         counterparty_category: str | None = None,
+        label_contains: str | None = None,
+        exclude_categories: list[str] | None = None,
     ) -> FlowAggregate:
         tok = self._token(token) if token else None
+        cp_ok = self._counterparty_filter(counterparty_category, label_contains, exclude_categories)
         result = FlowAggregate(
             tool="aggregate_flows",
             evidence=Evidence(block_range=(0, 0)),
@@ -415,12 +418,7 @@ class TreasuryTools:
             price_note=self._price_note(),
         )
         rng = self._check_range(date_range, result)
-        rows = [
-            r
-            for r in self._flow_rows(direction, tok, rng)
-            if counterparty_category is None
-            or self._category(r.counterparty) == counterparty_category
-        ]
+        rows = [r for r in self._flow_rows(direction, tok, rng) if cp_ok(r.counterparty)]
         key_fn: Callable[[Row], str] = {
             GroupBy.COUNTERPARTY: lambda r: r.counterparty,
             GroupBy.TOKEN: lambda r: r.symbol,
@@ -553,8 +551,13 @@ class TreasuryTools:
         period_a: DateRange,
         period_b: DateRange,
         token: str | None = None,
+        direction: FlowDirection = FlowDirection.ANY,
     ) -> PeriodComparison:
         tok = self._token(token) if token else None
+        if direction is not FlowDirection.ANY and metric is not Metric.TRANSFER_COUNT:
+            raise ToolInputError(
+                "direction only applies to transfer_count; use inflow or outflow instead"
+            )
         if metric is Metric.END_BALANCE and tok is None:
             raise ToolInputError("end_balance needs a token")
         result = PeriodComparison(
@@ -572,7 +575,7 @@ class TreasuryTools:
         values: list[Decimal | None] = []
         for slot, period in (("period_a", period_a), ("period_b", period_b)):
             rng = self._check_range(period, result)
-            value, unit, rows = self._metric_value(metric, tok, rng, result)
+            value, unit, rows = self._metric_value(metric, tok, rng, result, direction)
             all_rows.extend(rows)
             pv = PeriodValue(
                 period=period,
@@ -594,6 +597,31 @@ class TreasuryTools:
         return result
 
     # --- internals for the tools above -----------------------------------------------------
+
+    def _counterparty_filter(
+        self,
+        category: str | None,
+        label_contains: str | None,
+        exclude_categories: list[str] | None,
+    ) -> Callable[[str], bool]:
+        """Predicate over counterparty addresses for the category/label filters."""
+        matching: set[str] | None = None
+        if label_contains:
+            needle = label_contains.strip().lower()
+            matching = {a for a, lb in self.data.labels.items() if needle in lb.name.lower()}
+            if not matching:
+                raise ToolInputError(f"no labeled counterparty name contains {label_contains!r}")
+        excluded = set(exclude_categories or [])
+
+        def ok(address: str) -> bool:
+            cat = self._category(address)
+            return (
+                (category is None or cat == category)
+                and (matching is None or address in matching)
+                and cat not in excluded
+            )
+
+        return ok
 
     def _category(self, address: str) -> str:
         lb = self.data.labels.get(address)
@@ -620,7 +648,12 @@ class TreasuryTools:
         return text.rstrip("0").rstrip(".") if "." in text else text
 
     def _metric_value(
-        self, metric: Metric, tok: TokenInfo | None, rng: DateRange, result: ToolResult
+        self,
+        metric: Metric,
+        tok: TokenInfo | None,
+        rng: DateRange,
+        result: ToolResult,
+        direction: FlowDirection = FlowDirection.ANY,
     ) -> tuple[Decimal | None, str, list[Row]]:
         if metric is Metric.END_BALANCE:
             assert tok is not None
@@ -633,7 +666,7 @@ class TreasuryTools:
             ]
             return Decimal(holding.amount), tok.symbol, rows
         if metric is Metric.TRANSFER_COUNT:
-            rows = self._flow_rows(FlowDirection.ANY, tok, rng)
+            rows = self._flow_rows(direction, tok, rng)
             return Decimal(len(rows)), "transfers", rows
         ins = self._flow_rows(FlowDirection.IN, tok, rng)
         outs = self._flow_rows(FlowDirection.OUT, tok, rng)

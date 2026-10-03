@@ -109,6 +109,9 @@ def eval_cmd(
     model: str | None = typer.Option(None),
     provider: str | None = typer.Option(None),
     min_interval: float = typer.Option(4.0, help="Seconds between model calls (record mode)"),
+    question_set: str = typer.Option(
+        "questions", help="eval/<name>.jsonl, e.g. questions or questions_heldout"
+    ),
 ) -> None:
     """Run the evaluation and write metrics.json and report.md for the run."""
     from dao_analyst.evaluation.report import results_table
@@ -118,17 +121,24 @@ def eval_cmd(
         raise typer.BadParameter("mode must be replay or record")
     settings = get_settings()
     cfg = load_dao_config(settings.dao_config)
-    out = run_eval(
-        cfg,
-        settings,
-        run_id=run_id,
-        configs=configs.split(","),
-        replay=mode == "replay",
-        only=only.split(",") if only else None,
-        model=model,
-        provider=provider,
-        min_interval_s=min_interval,
-    )
+    from dao_analyst.evaluation.runner import ReplayMismatchError
+
+    try:
+        out = run_eval(
+            cfg,
+            settings,
+            run_id=run_id,
+            configs=configs.split(","),
+            replay=mode == "replay",
+            only=only.split(",") if only else None,
+            model=model,
+            provider=provider,
+            min_interval_s=min_interval,
+            question_set=question_set,
+        )
+    except ReplayMismatchError as exc:
+        typer.echo(f"Replay stopped, nothing was overwritten: {exc}", err=True)
+        raise typer.Exit(1) from exc
     typer.echo(results_table(out["metrics"]))
 
 

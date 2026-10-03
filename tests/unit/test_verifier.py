@@ -119,3 +119,29 @@ def test_prose_number_scanner() -> None:
 def test_date_type_args_do_not_leak(reg: ToolRegistry) -> None:
     assert reg.log[0].result is not None
     assert reg.log[0].result.model_dump()["as_of_date"] == date(2024, 6, 30)
+
+
+def test_prose_check_ignores_list_markers_and_quoted_labels() -> None:
+    from dao_analyst.agent.verifier import prose_numbers
+
+    text = "Top recipients:\n1. Axia Network (fka 404DAO): {c1}\n2) Burn address (0x...dead): {c2}"
+    quoted = ["Axia Network (fka 404DAO)", "Burn address (0x...dead)"]
+    assert prose_numbers(text, "", quoted) == []
+    assert prose_numbers(text, "") != []  # without the quoted labels, 404 is still flagged
+    assert prose_numbers("about 404 UNI", "", quoted) == ["404"]
+
+
+def test_partial_label_quotes_pass(reg: ToolRegistry) -> None:
+    from dao_analyst.agent.registry import ToolRegistry as Reg
+    from dao_analyst.agent.verifier import prose_numbers, quoted_phrases
+    from dao_analyst.tools.dataset import LabelInfo
+
+    tools = make()
+    tools.data.labels["0x" + "02" * 20] = LabelInfo(
+        "0x" + "02" * 20, "Grants - Axia (fka 404DAO)", "grant", "s"
+    )
+    r = Reg(tools)
+    r.execute("top_counterparties", '{"direction": "out"}')
+    quoted = quoted_phrases(r.log)
+    assert prose_numbers("Axia (fka 404DAO) received {c1}", "", quoted) == []
+    assert prose_numbers("Axia received 404 UNI", "", quoted) == ["404"]
