@@ -84,6 +84,17 @@ def claim_support(result: dict[str, Any], registry: ToolRegistry) -> tuple[int, 
     return len(claims), supported
 
 
+def stable_record(qid: str, result: AgentResult) -> dict[str, Any]:
+    """Result without wall-clock timings, so replaying a run rewrites identical files.
+    Latency metrics use ``model_latency_s``, which is recorded in the cassette."""
+    record = {"id": qid, **result.to_dict()}
+    record.pop("latency_s", None)
+    record["tool_calls"] = [
+        {k: v for k, v in c.items() if k != "latency_ms"} for c in record.get("tool_calls") or []
+    ]
+    return record
+
+
 def run_config(
     name: str,
     questions: list[dict[str, Any]],
@@ -118,7 +129,7 @@ def run_config(
                 text="",
                 error=f"not recorded: {exc}",
             )
-        record = {"id": q["id"], **result.to_dict()}
+        record = stable_record(q["id"], result)
         results.append(record)
         log.info(
             "eval.question",
