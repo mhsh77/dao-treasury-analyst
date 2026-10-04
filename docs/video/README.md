@@ -1,5 +1,7 @@
 # Project video
 
+The 60-second hero film lives in [`film/`](film/). This folder holds the 7-minute deep dive.
+
 `dao-treasury-analyst.mp4` (about 7 minutes, 1080p, narrated, with a soft English subtitle
 track; the same subtitles are in `dao-treasury-analyst.srt`).
 

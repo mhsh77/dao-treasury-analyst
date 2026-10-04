@@ -1,0 +1,31 @@
+1
+00:00:00,600 --> 00:00:04,241
+A treasury question deserves an answer you can check.
+
+2
+00:00:04,900 --> 00:00:11,874
+The model never reads raw transactions. It calls typed tools, and the tools do the math.
+
+3
+00:00:12,300 --> 00:00:18,015
+13.14 million UNI, sent to the Uniswap Foundation.
+
+4
+00:00:18,500 --> 00:00:25,089
+Behind that number are two real transactions on Ethereum, and the answer links to both.
+
+5
+00:00:25,600 --> 00:00:35,121
+Before you see it, a verifier checks every figure against the tool output. Untraceable numbers never reach you.
+
+6
+00:00:35,800 --> 00:00:44,696
+And it knows when to say no: no investment advice, no private wallets, no guessing past its data.
+
+7
+00:00:45,400 --> 00:00:55,071
+On 85 questions with independent answers, it got 88.7% right. Reading raw data, the same model got 6.5%.
+
+8
+00:00:56,000 --> 00:01:02,536
+DAO Treasury Analyst. Numbers you can check. Open source, on GitHub.

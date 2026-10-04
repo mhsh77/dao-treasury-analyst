@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<!-- DAO Treasury Analyst · "One number, traced" · composition for onetake (github.com/feitangyuan/onetake).
+     Uses onetake's lib/motion.js (PolyForm Noncommercial 1.0.0), loaded from motion.js beside this file and not
+     redistributed. Every value on screen is a pure function of t; every figure comes from the repo's recorded eval runs. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>DAO Treasury Analyst · one number, traced</title>
+<script src="look.js"></script>
+<style>
+:root{--ground:#0b1020;--deep:#05070e;--card:#121a2e;--line:#26324f;--mute:#8a96b4;--ink:#eef2fa;--accent:#3ee08f;--accent2:#ff6b5e;
+  --display:Geist,Inter,system-ui,sans-serif;--text:Inter,system-ui,sans-serif;--mono:'Geist Mono',ui-monospace,monospace}
+html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:var(--deep)}
+body{font-family:var(--text);color:var(--ink)}
+#stage{position:absolute;inset:0;overflow:hidden;background:radial-gradient(1500px 900px at 50% 42%,var(--ground) 0%,var(--deep) 100%)}
+canvas.full{position:absolute;left:0;top:0;width:1920px;height:1080px}
+#world{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;will-change:transform}
+.abs{position:absolute;left:0;top:0;will-change:transform,opacity;transform-origin:0 0}
+.card{position:absolute;background:var(--card);border:1.5px solid var(--line);border-radius:22px;overflow:hidden;
+  box-shadow:0 40px 90px -40px rgba(0,0,0,.65)}
+#words{font-family:var(--display);font-weight:600;font-size:76px;letter-spacing:-.03em;white-space:nowrap}
+#words span{display:inline-block;margin-right:.26em;transform-origin:50% 80%}
+#words .acc{color:var(--accent)}
+#prompt .txt{position:absolute;left:40px;top:48px;font-size:34px;white-space:pre;color:var(--ink)}
+#prompt .caret{display:inline-block;width:3px;height:38px;background:var(--accent);vertical-align:-7px;margin-left:3px}
+#prompt .send{position:absolute;width:64px;height:64px;border-radius:50%;background:var(--accent)}
+#prompt .send:after{content:"";position:absolute;left:24px;top:22px;width:14px;height:14px;border-left:3.5px solid var(--deep);border-top:3.5px solid var(--deep);transform:rotate(45deg)}
+#trail{position:absolute;width:2px;background:linear-gradient(var(--line),var(--accent))}
+.chip .ic{position:absolute;left:26px;top:28px;width:40px;height:40px;border-radius:50%}
+.chip .call{position:absolute;left:88px;top:16px;font-family:var(--mono);font-size:25px;white-space:nowrap;color:var(--ink)}
+.chip .call b{color:var(--accent);font-weight:400}
+.chip .res{position:absolute;left:88px;top:54px;font-family:var(--mono);font-size:21px;white-space:nowrap;color:var(--mute)}
+#answer .lab,.tile .q,#red .lab{font-family:var(--mono);font-size:24px;letter-spacing:.08em;color:var(--mute);text-transform:uppercase;white-space:nowrap}
+#answer .lab{position:absolute;left:70px;top:58px}
+#num{position:absolute;left:70px;top:112px;font-family:var(--display);font-weight:600;font-size:136px;letter-spacing:-.035em;white-space:nowrap}
+#num span{display:inline-block;transform-origin:50% 90%}
+#num .unit{color:var(--accent);margin-left:.18em}
+#answer .sub{position:absolute;left:72px;top:318px;font-size:31px;color:var(--mute);white-space:nowrap}
+#answer .sub b{color:var(--ink);font-weight:500}
+.row{position:absolute}
+.row .amt{position:absolute;left:44px;top:30px;font-family:var(--display);font-weight:600;font-size:52px;letter-spacing:-.02em;white-space:nowrap}
+.row .meta{position:absolute;left:520px;top:26px;font-family:var(--mono);font-size:23px;color:var(--mute);white-space:nowrap;line-height:1.5}
+.row .meta b{color:var(--ink);font-weight:400}
+.row .lnk{position:absolute;right:30px;top:36px;height:48px;padding:0 22px;border-radius:999px;border:1.5px solid var(--accent);
+  font-family:var(--mono);font-size:22px;line-height:48px;color:var(--accent);white-space:nowrap}
+.kid{font-family:var(--display);font-weight:600;font-size:52px;letter-spacing:-.02em;white-space:nowrap;color:var(--ink)}
+#claim pre{position:absolute;left:56px;top:44px;margin:0;font-family:var(--mono);font-size:31px;line-height:1.62;color:var(--ink)}
+#claim .ln{display:block;overflow:hidden;height:50px}
+#claim .ln span{display:inline-block}
+#claim .k{color:var(--mute)} #claim .v{color:var(--accent)}
+.stamp{position:absolute;padding:0 30px;height:76px;border-radius:16px;font-family:var(--display);font-weight:700;font-size:38px;
+  letter-spacing:.02em;line-height:76px;white-space:nowrap;transform-origin:50% 50%}
+#stamp{background:var(--accent);color:var(--deep)}
+#rstamp{background:var(--accent2);color:var(--deep)}
+#cap{font-family:var(--mono);font-size:24px;color:var(--mute);white-space:nowrap}
+#cap b{color:var(--accent);font-weight:400}
+#red{border-color:rgba(255,107,94,.45)}
+#red .lab{position:absolute;left:60px;top:56px;text-transform:none;letter-spacing:0;font-size:27px}
+#rnum{position:absolute;left:60px;top:150px;font-family:var(--display);font-weight:600;font-size:62px;letter-spacing:-.03em;color:var(--accent2);white-space:nowrap}
+#rnum span{display:inline-block;transform-origin:50% 90%}
+.tile .q{position:absolute;left:52px;top:52px;font-size:30px;text-transform:none;letter-spacing:0;font-family:var(--text)}
+.tile .a{position:absolute;left:50px;top:130px;font-family:var(--display);font-weight:600;font-size:64px;letter-spacing:-.025em;white-space:nowrap}
+.tile .st{position:absolute;left:52px;bottom:52px;height:56px;padding:0 24px;border-radius:999px;font-family:var(--mono);font-size:28px;line-height:56px;white-space:nowrap}
+.tile .st.ok{color:var(--accent);border:1.5px solid rgba(62,224,143,.5)}
+.tile .st.no{color:#ffc46b;border:1.5px solid rgba(255,196,107,.55)}
+.bar{position:absolute;border-radius:14px 14px 4px 4px}
+.track{position:absolute;border-radius:14px 14px 4px 4px;background:rgba(138,150,180,.08);border:1.5px dashed var(--line)}
+.bv{font-family:var(--display);font-weight:600;font-size:88px;letter-spacing:-.03em;white-space:nowrap}
+.bl{font-size:30px;color:var(--mute);white-space:nowrap}
+#ccap{font-size:30px;color:var(--mute);white-space:nowrap}
+#base{position:absolute;height:2px;background:var(--line)}
+#mark{font-family:var(--display);font-weight:600;font-size:124px;letter-spacing:-.035em;white-space:nowrap}
+#mark span{display:inline-block;transform-origin:50% 88%}
+#tag{font-family:var(--display);font-weight:500;font-size:46px;letter-spacing:-.02em;white-space:nowrap;color:var(--mute)}
+#tag span{display:inline-block;margin-right:.25em}
+#tag .acc{color:var(--accent)}
+#url{height:66px;padding:0 30px;border-radius:999px;border:1.5px solid var(--line);font-family:var(--mono);font-size:27px;line-height:66px;white-space:nowrap;color:var(--ink)}
+#stac{position:absolute;inset:0;background:var(--deep);display:none;align-items:center;justify-content:center;
+  font-family:var(--display);font-weight:700;font-size:112px;letter-spacing:.01em;color:var(--ink)}
+#stac b{color:var(--accent);font-weight:700}
+#cursor{position:absolute;left:0;top:0;width:34px;height:44px;will-change:transform;filter:drop-shadow(0 3px 6px rgba(0,0,0,.5))}
+#hud{position:absolute;right:16px;bottom:12px;font:15px var(--mono);color:#f66;display:none}
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="bg" class="full" width="1920" height="1080"></canvas>
+  <div id="world">
+    <div id="words" class="abs"><span>Every</span><span>number</span><span>needs a</span><span class="acc">source.</span></div>
+    <div id="prompt" class="card"><div class="txt"><span id="ptxt"></span><i class="caret" id="caret"></i></div><div class="send" id="send"></div></div>
+    <div id="trail"></div>
+    <div class="card chip" id="chip0"><div class="ic"></div><div class="call"><b>c1</b> describe_snapshot()</div><div class="res">→ Uniswap Timelock · pinned at block 25,433,938</div></div>
+    <div class="card chip" id="chip1"><div class="ic"></div><div class="call"><b>c2</b> top_counterparties(direction="out", token="UNI")</div><div class="res">→ #3  Uniswap Foundation custody multisig</div></div>
+    <div class="card chip" id="chip2"><div class="ic"></div><div class="call"><b>c3</b> list_transfers(counterparty="Uniswap Foundation …")</div><div class="res">→ 2 transfers</div></div>
+    <div class="card" id="answer"><div class="lab" id="alab">Answer</div><div id="num"></div><div class="sub" id="asub">sent to the <b>Uniswap Foundation custody multisig</b> · 2 transactions</div></div>
+    <div class="card row" id="row0"><div class="amt">2,457,002 UNI</div><div class="meta"><b>2022-08-26</b> · block 15,413,228<br>tx 0x9188543c…df812947d42</div><div class="lnk">etherscan.io ↗</div></div>
+    <div class="card row" id="row1"><div class="amt">10,685,984.71 UNI</div><div class="meta"><b>2023-10-20</b> · block 18,391,257<br>tx 0xd8304a66…a5284076b66b0e</div><div class="lnk">etherscan.io ↗</div></div>
+    <div class="kid abs" id="kid0">2,457,002</div>
+    <div class="kid abs" id="kid1">10,685,984.71</div>
+    <div class="card" id="claim"><pre id="json"></pre></div>
+    <div class="stamp abs" id="stamp"><svg viewBox="0 0 24 24" style="width:.8em;height:.8em;vertical-align:-.06em;margin-right:.3em"><path d="M4 12.5 L9.5 18 L20 6" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg>VERIFIED</div>
+    <div class="abs" id="cap">matches <b>c2</b> · counterparties[2].amounts[0].amount</div>
+    <div class="card" id="red"><div class="lab">A model reading the raw data, asked for 2024 UNI outflows:</div><div id="rnum"></div></div>
+    <div class="stamp abs" id="rstamp"><svg viewBox="0 0 24 24" style="width:.7em;height:.7em;vertical-align:-.02em;margin-right:.35em"><path d="M5 5 L19 19 M19 5 L5 19" fill="none" stroke="currentColor" stroke-width="3.8" stroke-linecap="round"/></svg>NOT TRACEABLE</div>
+    <div id="tiles"></div>
+    <div class="track" id="trk0"></div><div class="track" id="trk1"></div>
+    <div class="bar" id="bar0" style="background:var(--accent2)"></div><div class="bar" id="bar1" style="background:var(--accent)"></div>
+    <div id="base"></div>
+    <div class="bv abs" id="bv0" style="color:var(--accent2)"></div><div class="bv abs" id="bv1" style="color:var(--accent)"></div>
+    <div class="bl abs" id="bl0">Model reading raw data</div><div class="bl abs" id="bl1">Full system</div>
+    <div class="abs" id="ccap">85 questions · expected answers from an independent SQL script</div>
+    <div id="mark" class="abs"></div>
+    <div id="tag" class="abs"><span>Numbers</span><span>you can</span><span class="acc">check.</span></div>
+    <div id="url" class="abs">github.com/mhsh77/dao-treasury-analyst</div>
+  </div>
+  <div id="stac"></div>
+  <svg id="cursor" viewBox="0 0 34 44"><path d="M4 3 L30 22 L18 24 L26 40 L20 43 L12 27 L4 36 Z" fill="#eef2fa" stroke="#05070e" stroke-width="2.5" stroke-linejoin="round"/></svg>
+  <div id="hud"></div>
+</div>
+<script src="motion.js"></script>
+<script>
+// ══════════════════════════════ timeline (seconds) — narration lines start at VO[i] ══════════════════════════════
+const DUR = 64, FPS = 30;
+const VO = [0.6, 4.9, 12.3, 18.5, 25.6, 35.8, 45.4, 56.0];
+window.__meta = { dur: DUR, fps: FPS, w: 1920, h: 1080, cuts: [55.0, 55.3, 55.62, 55.95],
+  inFrame: { num: [12.3, 18.6], claim: [26.4, 30.4, 'whole'], mark: [57.2, 64, 'whole'] } };
+const { clamp, lerp, seg, sstep, ssstep, ease } = OM;
+const T = {
+  words: [0.25, 0.55, 0.85, 1.25], wordsMorph: [2.25, 2.95],
+  type0: 3.0, cps: 38, click: 5.05, toPill: [5.3, 6.0],
+  trail: [5.95, 9.7], chips: [6.2, 7.3, 8.4], tickAfter: 0.75,
+  toAnswer: [11.15, 11.95], numIn: 12.2, subIn: 13.05,
+  dive: [18.0, 18.7], split: 18.75, rowsIn: [19.0, 19.75], kidsHop: [18.85, 19.6],
+  clicks: [22.45, 23.65],
+  gather: [25.15, 26.15], claimIn: 25.55, json0: 25.85, stamp: 28.3, cap: 28.75,
+  whipOut: [30.5, 30.9], redIn: 30.7, rnum: 30.85, rstamp: 31.9, redOut: 32.6, whipBack: [32.9, 33.35],
+  pull: [34.0, 35.9], tilesIn: 34.5, highlights: [38.0, 39.8, 41.6],
+  toChart: [44.6, 45.8], chartIn: 45.6, ccap: 46.3, grow1: 48.4, grow0: 53.7,
+  stac: [[55.0, 'TYPED <b>TOOLS.</b>'], [55.3, 'VERIFIED <b>CLAIMS.</b>'], [55.62, 'HONEST <b>EVAL.</b>']], stacEnd: 55.95,
+  underline: [55.95, 56.65], markIn: 56.15, tagIn: 58.05, urlIn: 59.7,
+};
+// ══════════════════════════════ world layout (px at zoom 1) ══════════════════════════════
+const P = { x: 410, y: 470, w: 1100, h: 140, r: 24 };          // prompt bar
+const Q = { x: 560, y: 116, w: 800, h: 70, r: 35 };            // the prompt, sent, as a pill
+const CH = [0, 1, 2].map(i => ({ x: 400, y: 262 + i * 134, w: 1120, h: 100, r: 20 }));
+const A = { x: 310, y: 240, w: 1300, h: 420, r: 28 };          // answer card
+const R = [{ x: 310, y: 760, w: 1300, h: 126, r: 22 }, { x: 310, y: 906, w: 1300, h: 126, r: 22 }];
+const C = { x: 480, y: 410, w: 960, h: 440, r: 26 };           // claim card
+const RED = { x: 2560, y: 430, w: 1300, h: 400, r: 26 };
+const CHART = { base: 880, top: 330, w: 280, x0: 660, x1: 1260 };   // bars: left = raw-data model, right = full system
+const U = { x: 0, y: 0, w: 0, h: 12 };                           // wordmark underline, measured
+const PROMPT_TEXT = 'How much UNI did the treasury send to the Uniswap Foundation?';
+const NUM_TEXT = '13,142,986.71';
+const RED_TEXT = '925,034,000,000,000,000,000,000 UNI';
+const TILES = [   // real recorded answers from eval/runs/2026-10-02-flash-lite (full system)
+  { q: 'UNI balance at the end of the snapshot', a: '272,134,858.48 UNI', st: 'verified', ok: 1 },
+  { q: 'UNI outflows in 2024', a: '2,296,058 UNI', st: 'verified', ok: 1 },
+  { q: 'Should the DAO sell UNI for stablecoins?', a: 'No investment advice', st: 'refused', ok: 0, hl: 0 },
+  { q: 'UNI received from the 4 treasury vesters', a: '430,000,002 UNI', st: 'verified', ok: 1 },
+  null,   // the centre cell is the claim card itself
+  { q: 'Who owns 0x5069a64b…0e500b7813a9b680f7e?', a: 'Not on the allowlist', st: 'refused', ok: 0, hl: 1 },
+  { q: 'Which month of 2025 had the largest UNI outflows?', a: 'Dec · 100,034,615 UNI', st: 'verified', ok: 1 },
+  { q: 'UNI outflows in July 2026?', a: 'Snapshot ends 2026-06-30', st: 'abstained', ok: 0, hl: 2 },
+  { q: 'Total sent to grant recipients', a: '2,500,000 UNI', st: 'verified', ok: 1 },
+];
+const TW = 900, TH = 420, GX = 1040, GY = 520;
+const tileRect = i => { const c = i % 3 - 1, r = Math.floor(i / 3) - 1; return { x: C.x + c * GX, y: C.y + r * GY, w: TW, h: TH }; };
+// camera keys: (x, y) is the world point at the frame centre
+let NUMC = { x: 960, y: 420 };
+let KEYS = [];
+function buildKeys() {
+  KEYS = [
+    { t: 0, x: 960, y: 548, zoom: 1.07 },
+    { t: 2.4, x: 960, y: 540, zoom: 1.0, curve: ease.sineInOut },
+    { t: 5.4, x: 960, y: 540, zoom: 1.0 },
+    { t: 6.4, x: 960, y: 440, zoom: 1.04, curve: ease.cubicInOut },
+    { t: 9.7, x: 960, y: 470, zoom: 1.0, curve: ease.sineInOut },
+    { t: 11.1, x: 960, y: 470, zoom: 1.0 },
+    { t: 11.9, x: 960, y: 450, zoom: 1.0, curve: ease.expoInOut },
+    { t: 18.0, x: 960, y: 450, zoom: 1.0 },
+    { t: 18.7, x: NUMC.x, y: NUMC.y, zoom: 1.55, curve: ease.expoInOut },
+    { t: 18.95, x: NUMC.x, y: NUMC.y, zoom: 1.55 },
+    { t: 19.9, x: 960, y: 640, zoom: 0.86, curve: ease.cubicInOut },
+    { t: 25.15, x: 960, y: 640, zoom: 0.86 },
+    { t: 26.3, x: 960, y: 640, zoom: 1.1, curve: ease.cubicInOut },
+    { t: 30.5, x: 960, y: 640, zoom: 1.1 },
+    { t: 30.9, x: RED.x + RED.w / 2, y: 640, zoom: 1.0, curve: ease.expoInOut },
+    { t: 32.9, x: RED.x + RED.w / 2, y: 640, zoom: 1.0 },
+    { t: 33.35, x: 960, y: 640, zoom: 1.1, curve: ease.expoInOut },
+    { t: 34.0, x: 960, y: 640, zoom: 1.1 },
+    { t: 35.9, x: 960, y: 630, zoom: 0.57, curve: ease.cubicInOut },
+    { t: 44.7, x: 960, y: 630, zoom: 0.57 },
+    { t: 45.9, x: 960, y: 610, zoom: 1.0, curve: ease.cubicInOut },
+    { t: 55.95, x: 960, y: 610, zoom: 1.0 },
+    { t: 56.7, x: 960, y: 560, zoom: 1.0, curve: ease.expoOut },
+  ];
+}
+const HITS = [[12.25, 5, 9], [18.78, 9, 8], [28.3, 13, 8], [30.9, 9, 9], [31.9, 15, 8], [56.4, 4, 9]];
+// the operator's hand: on while things travel, zero in every hold
+const HANDWIN = [[3.2, 11.2], [18.9, 25.3], [30.4, 34.2], [44.4, 47.2]];
+const handEnv = t => HANDWIN.reduce((m, [a, b]) => Math.max(m, sstep(a, a + 0.5, t) * (1 - sstep(b - 0.5, b, t))), 0);
+function camAt(t) {
+  const c = OM.camera(t, KEYS), e = handEnv(t) * 4.0;
+  let x = c.x + e * (Math.sin(1.7 * t) + 0.6 * Math.sin(2.9 * t + 1)) / c.zoom;
+  let y = c.y + e * (Math.sin(1.3 * t + 2) + 0.5 * Math.sin(3.3 * t)) / c.zoom, rot = c.rot;
+  for (const [th, amp, decay] of HITS) { const s = OM.shake(t, th, { amp, decay, seed: Math.round(th * 100) }); x += s.x / c.zoom; y += s.y / c.zoom; rot += s.rot; }
+  return { x, y, zoom: c.zoom, rot };
+}
+// the hand (pointer), in world coordinates: types-and-sends, then touches each transaction link
+const HAND = [
+  { t: 3.2, x: 1820, y: 900 }, { t: 4.3, x: 1560, y: 700 }, { t: 4.95, x: P.x + P.w - 70, y: P.y + 72 },
+  { t: 5.3, x: P.x + P.w - 66, y: P.y + 80 }, { t: 6.4, x: 1700, y: 760 }, { t: 7.6, x: 2100, y: 900 },
+  { t: 20.6, x: 2150, y: 1180 }, { t: 21.6, x: 1640, y: 1000 }, { t: 22.35, x: R[0].x + R[0].w - 140, y: R[0].y + 62 },
+  { t: 22.9, x: R[0].x + R[0].w - 150, y: R[0].y + 70 }, { t: 23.55, x: R[1].x + R[1].w - 140, y: R[1].y + 62 },
+  { t: 24.2, x: R[1].x + R[1].w - 130, y: R[1].y + 72 }, { t: 25.2, x: 2150, y: 1300 },
+];
+const handVisible = t => (t > 3.2 && t < 7.6) || (t > 20.6 && t < 25.2);
+const CLICKS = [T.click, ...T.clicks];
+// ══════════════════════════════ dom ══════════════════════════════
+const $ = id => document.getElementById(id);
+const el = { words: [...$('words').children], chips: [0, 1, 2].map(i => $('chip' + i)), rows: [$('row0'), $('row1')],
+  kids: [$('kid0'), $('kid1')], tags: [...$('tag').children] };
+$('num').innerHTML = [...NUM_TEXT].map(c => `<span>${c}</span>`).join('') + '<span class="unit">UNI</span>';
+$('rnum').innerHTML = [...RED_TEXT].map(c => `<span>${c === ' ' ? '&nbsp;' : c}</span>`).join('');
+$('mark').innerHTML = [...'DAO Treasury Analyst'].map(c => `<span>${c === ' ' ? '&nbsp;' : c}</span>`).join('');
+const JSON_LINES = [
+  ['{', ''], ['  <span class="k">"value":</span> <span class="v">"13142986.71"</span>,', ''],
+  ['  <span class="k">"unit":</span> "UNI",', ''], ['  <span class="k">"source":</span> "c2 · top_counterparties",', ''],
+  ['  <span class="k">"tx":</span> ["0x9188543c…", "0xd8304a66…"]', ''], ['}', '']];
+$('json').innerHTML = JSON_LINES.map(l => `<span class="ln"><span>${l[0]}</span></span>`).join('');
+el.json = [...$('json').children].map(n => n.firstChild);
+$('tiles').innerHTML = TILES.map((d, i) => d ? `<div class="card tile" id="tile${i}"><div class="q">${d.q}</div><div class="a" style="color:${d.ok ? 'var(--ink)' : '#ffc46b'}">${d.a}</div><div class="st ${d.ok ? 'ok' : 'no'}">${d.st}</div></div>` : '').join('');
+el.tiles = TILES.map((d, i) => d ? $('tile' + i) : null);
+el.digits = [...$('num').children]; el.rdigits = [...$('rnum').children]; el.letters = [...$('mark').children];
+const ctx = $('bg').getContext('2d');
+let NOISE = null;
+// ══════════════════════════════ helpers ══════════════════════════════
+const show = (e, on) => { const d = on ? '' : 'none'; if (e.style.display !== d) e.style.display = d; };
+function box(e, b, op = 1, extra = '') {           // a card at rect b (x, y, w, h, r)
+  show(e, op > 0.002);
+  e.style.left = b.x + 'px'; e.style.top = b.y + 'px'; e.style.width = b.w + 'px'; e.style.height = b.h + 'px';
+  if (b.r != null) e.style.borderRadius = b.r + 'px';
+  e.style.opacity = op; e.style.transform = extra;
+}
+function put(e, x, y, s = 1, op = 1, extra = '') {
+  show(e, op > 0.002);
+  e.style.transform = `translate(${x}px,${y}px) scale(${s})${extra}`; e.style.opacity = op;
+}
+const fmtPct = v => v.toFixed(1) + '%';
+const spr = (t, t0, z = 0.62, w = 10) => OM.spring(t - t0, z, w);
+// ══════════════════════════════ frame(t): every number for time t ══════════════════════════════
+let M = {};   // measured in __ready
+function frame(t) {
+  const F = {};
+  // 1 · words, then the box they sit in grows into the prompt bar
+  const wm = seg(t, ...T.wordsMorph), wk = ease.expoOut(wm);
+  F.words = el.words.map((_, i) => { const w = OM.wordRise(t, T.words[i]); return { op: w.op * (1 - sstep(0.25, 0.85, wm)), y: w.y - wk * 40, s: w.s * (1 - 0.25 * wk) }; });
+  const WB = { x: M.words.x - 40, y: M.words.y - 26, w: M.words.w + 80, h: M.words.h + 52, r: 30 };
+  F.prompt = t < T.toPill[0] ? OM.morphRect(t, ...T.wordsMorph, WB, P) : OM.morphRect(t, ...T.toPill, P, Q);
+  F.promptOp = sstep(T.wordsMorph[0], T.wordsMorph[0] + 0.2, t) * (1 - sstep(T.toAnswer[0], T.toAnswer[0] + 0.5, t));
+  F.typed = OM.typeOn(t, T.type0, PROMPT_TEXT, { cps: T.cps });
+  F.pk = seg(t, ...T.toPill);
+  F.send = OM.press(t, T.click, { depth: 0.22 });
+  // 2 · the trail grows from the pill; tool calls pop in and tick
+  const tk = ease.cubicOut(seg(t, ...T.trail));
+  F.trail = { x: 959, y: Q.y + Q.h, h: tk * (CH[2].y + CH[2].h / 2 - Q.y - Q.h), op: 1 - sstep(T.toAnswer[0], T.toAnswer[0] + 0.4, t) };
+  F.chips = CH.map((b, i) => {
+    const p = OM.popIn(t, T.chips[i]), tick = OM.tick(t, T.chips[i] + T.tickAfter);
+    let bb = { ...b, y: b.y + p.dy }, op = p.op * (t >= T.chips[i] - 0.05 ? 1 : 0), s = p.s;
+    if (i === 1) { const m = OM.morphRect(t, ...T.toAnswer, b, A); if (t >= T.toAnswer[0]) { bb = m; s = 1; } if (t >= T.toAnswer[1]) op = 0; }
+    else op *= 1 - sstep(T.toAnswer[0] - 0.1, T.toAnswer[0] + 0.35, t);
+    return { b: bb, op, s, tick, inner: i === 1 ? 1 - sstep(T.toAnswer[0], T.toAnswer[0] + 0.25, t) : 1 };
+  });
+  // 3 · the answer: number lands, sub line rises; then it splits into the two transactions
+  F.answerOp = t >= T.toAnswer[1] ? 1 - sstep(T.gather[0] + 0.3, T.gather[1], t) : 0;
+  F.answerInner = sstep(T.toAnswer[1], T.toAnswer[1] + 0.3, t);
+  F.digits = el.digits.map((_, i) => {
+    const d = OM.letterDrop(t, T.numIn, i, { stagger: 0.035 });
+    const sp = OM.impactSplit(t, T.split, M.digits[i], M.numCx, { width: 520, spread: 46, bounce: 28 });
+    const away = sstep(T.split + 0.2, T.split + 0.75, t);
+    return { op: d.op * (1 - 0.82 * away), y: d.y + sp.dy, x: sp.dx, sx: d.sx, sy: d.sy, rot: sp.rot };
+  });
+  F.sub = OM.wordRise(t, T.subIn);
+  F.kids = [0, 1].map(i => {
+    const to = { x: R[i].x + 44, y: R[i].y + 30 }, from = { x: M.numCx - 140 + i * 40, y: A.y + 150 };
+    const h = OM.hop(t, ...T.kidsHop, from, to, { height: 120 + i * 60 });
+    return { x: h.x, y: h.y, op: sstep(T.kidsHop[0], T.kidsHop[0] + 0.1, t) * (1 - sstep(T.rowsIn[1] - 0.05, T.rowsIn[1] + 0.1, t)), s: lerp(1.35, 1, h.k) };
+  });
+  F.rows = R.map((b, i) => {
+    const seed = { x: M.numCx - 60, y: A.y + 190, w: 120, h: 40, r: 20 };
+    const m = OM.morphRect(t, T.rowsIn[0] + i * 0.12, T.rowsIn[1] + i * 0.12, seed, b);
+    const g = gatherTo(t, i + 1);
+    return { b: m, op: sstep(T.rowsIn[0] + i * 0.12, T.rowsIn[0] + 0.15 + i * 0.12, t) * g.op, inner: sstep(T.rowsIn[1] - 0.15, T.rowsIn[1] + 0.1, t), g,
+      lnk: OM.press(t, T.clicks[i], { depth: 0.12 }) };
+  });
+  F.answerG = gatherTo(t, 0);
+  // 4 · the claim card, the verifier's stamp, the caption
+  const cp = OM.popIn(t, T.claimIn, { rise: 30 });
+  F.claim = { op: cp.op, s: cp.s, dy: cp.dy };
+  F.json = el.json.map((_, i) => OM.maskRise(t, T.json0, i, { stagger: 0.11, dist: 50 }));
+  const st = OM.impact(t, T.stamp), sk = ease.expoOut(seg(t, T.stamp - 0.18, T.stamp));
+  F.stamp = { op: sstep(T.stamp - 0.18, T.stamp - 0.1, t), s: lerp(1.9, 1, sk), sx: st.sx, sy: st.sy, rot: lerp(-0.12, -0.035, sk) };
+  F.cap = OM.wordRise(t, T.cap);
+  // 5 · the untraceable number: whip right, slam, stamp, drop
+  const rp = OM.popIn(t, T.redIn, { rise: 40 }), ro = OM.liftOut(t, T.redOut, { dur: 0.32, dir: 1, dist: 520, blur: 0 });
+  F.red = { op: rp.op * ro.op, dy: rp.dy + ro.dy, s: rp.s };
+  F.rdigits = el.rdigits.map((_, i) => OM.letterDrop(t, T.rnum, i, { stagger: 0.012, dist: 60 }));
+  const rs = OM.impact(t, T.rstamp), rk = ease.expoOut(seg(t, T.rstamp - 0.16, T.rstamp));
+  F.rstamp = { op: sstep(T.rstamp - 0.16, T.rstamp - 0.08, t) * ro.op, s: lerp(2.0, 1, rk), sx: rs.sx, sy: rs.sy, rot: lerp(0.14, 0.04, rk), dy: ro.dy };
+  // 6 · pull out: the claim is one answer among nine; refusals light up as the narration names them
+  F.tiles = TILES.map((d, i) => {
+    if (!d) return null;
+    const r = tileRect(i), dist = Math.hypot(i % 3 - 1, Math.floor(i / 3) - 1);
+    const p = OM.popIn(t, T.tilesIn + dist * 0.18 + (i % 2) * 0.05, { rise: 60 });
+    const hl = d.hl != null ? OM.press(t, T.highlights[d.hl], { depth: 0.06, decay: 7 }) : null;
+    const lit = d.hl != null ? sstep(T.highlights[d.hl], T.highlights[d.hl] + 0.15, t) : 0;
+    const g = tileGather(t, i, r);
+    return { r, op: p.op * g.op, s: p.s * (hl ? hl.s : 1) * g.s, dy: p.dy, lit, gx: g.x, gy: g.y };
+  });
+  F.claimG = tileGather(t, 4, C);
+  // 7 · the chart
+  const cin = sstep(T.chartIn, T.chartIn + 0.4, t), cout = t >= T.stacEnd ? 0 : 1;
+  F.chart = { op: cin * cout, cap: OM.wordRise(t, T.ccap) };
+  F.bars = [[T.grow0, 0.065], [T.grow1, 0.887]].map(([tg, v]) => { const k = spr(t, tg, 0.7, 7.5); return { k, v: v * clamp(k, 0, 1.08) }; });
+  // 8 · staccato, then the full bar becomes the wordmark's underline
+  F.stac = t >= T.stac[0][0] && t < T.stacEnd ? OM.staccato(t, T.stac) : null;
+  const H1 = (CHART.base - CHART.top) * 0.887;
+  const barRect = { x: CHART.x1, y: CHART.base - H1 * clamp(F.bars[1].k, 0, 1.08), w: CHART.w, h: H1 * clamp(F.bars[1].k, 0, 1.08), r: 14 };
+  F.bar1 = t < T.underline[0] ? barRect : OM.morphRect(t, ...T.underline, { ...barRect, h: H1 }, { ...U, r: 6 });
+  F.letters = el.letters.map((_, i) => OM.letterDrop(t, T.markIn, i, { stagger: 0.045 }));
+  F.tags = el.tags.map((_, i) => OM.wordRise(t, T.tagIn + i * 0.28));
+  F.url = OM.popIn(t, T.urlIn);
+  F.cam = camAt(t);
+  F.hand = OM.cursor(t, HAND, CLICKS);
+  return F;
+}
+// the answer card (i = 0) and the two rows (i = 1, 2) fold into the claim card
+function gatherTo(t, i) {
+  const k = ease.smoother(seg(t, T.gather[0] + i * 0.08, T.gather[1] + i * 0.08));
+  return { k, op: 1 - sstep(0.75, 1, k), s: lerp(1, 0.45, k), cx: C.x + C.w / 2, cy: C.y + C.h / 2 };
+}
+// at the end, every tile (and the claim, i = 4) travels on an arc into the base of the bars and vanishes
+function tileGather(t, i, r) {
+  const to = { x: (i % 2 ? CHART.x1 : CHART.x0) + CHART.w / 2 - r.w / 2, y: CHART.base - r.h / 2 };
+  const g = OM.gather(t, ...T.toChart, i, 9, { x: r.x, y: r.y }, to, { stagger: 0.05, arc: 260, spin: 0.25 });
+  return { x: g.x - r.x, y: g.y - r.y, s: lerp(1, 0.08, g.k), op: 1 - sstep(0.7, 1, g.k), rot: g.rot };
+}
+// ══════════════════════════════ seek ══════════════════════════════
+function seek(t) {
+  const F = frame(t), V = OM.view(F.cam);
+  // ground: a far lattice the camera slides against, and a fixed grain against banding
+  ctx.clearRect(0, 0, 1920, 1080);
+  const G = OM.lattice(F.cam, { depth: 1.2, spacing: 56, px: 1.3 });
+  ctx.save(); ctx.setTransform(...G.matrix); ctx.fillStyle = 'rgba(138,150,180,0.20)'; ctx.beginPath();
+  for (let x = G.x0; x <= G.x1; x += G.spacing) for (let y = G.y0; y <= G.y1; y += G.spacing) { ctx.moveTo(x + G.r, y); ctx.arc(x, y, G.r, 0, 6.2832); }
+  ctx.fill(); ctx.restore();
+  ctx.drawImage(NOISE, 0, 0);
+  $('world').style.transform = `matrix(${V.join(',')})`;
+  // words + prompt
+  el.words.forEach((w, i) => { const f = F.words[i]; w.style.opacity = f.op; w.style.transform = `translateY(${f.y}px) scale(${f.s})`; });
+  put($('words'), M.words.x, M.words.y, 1, F.words.some(w => w.op > 0) ? 1 : 0);
+  box($('prompt'), F.prompt, F.promptOp);
+  const pk = ease.expoOut(F.pk);
+  $('ptxt').textContent = F.typed.str; $('caret').style.opacity = F.typed.caret * (t < T.click ? 1 : 0);
+  const txt = $('prompt').firstChild;
+  txt.style.transform = `translate(${-16 * pk}px,${-30 * pk}px) scale(${lerp(1, 0.62, pk)})`; txt.style.transformOrigin = '0 0';
+  txt.style.opacity = sstep(T.type0 - 0.05, T.type0, t);
+  const sd = $('send'); sd.style.left = (F.prompt.w - 92) + 'px'; sd.style.top = (F.prompt.h / 2 - 32) + 'px';
+  sd.style.transform = `scale(${F.send.s * (1 - pk)})`; sd.style.opacity = sstep(T.type0, T.type0 + 0.3, t) * (1 - pk);
+  sd.style.background = F.send.active ? '#ffffff' : 'var(--accent)';
+  // trail + chips
+  const tr = $('trail'); show(tr, F.trail.h > 1 && F.trail.op > 0); tr.style.left = F.trail.x + 'px'; tr.style.top = F.trail.y + 'px'; tr.style.height = F.trail.h + 'px'; tr.style.opacity = F.trail.op;
+  F.chips.forEach((c, i) => {
+    const e = el.chips[i]; box(e, c.b, c.op, `scale(${c.s})`); e.style.transformOrigin = '50% 50%';
+    [...e.children].forEach(n => { n.style.opacity = c.inner; });
+    const ic = e.firstChild; ic.style.background = c.tick.on ? 'var(--accent)' : 'transparent';
+    ic.style.border = c.tick.on ? 'none' : '3px solid var(--line)'; ic.style.borderTopColor = c.tick.on ? '' : 'var(--accent)';
+    ic.style.transform = c.tick.on ? `scale(${c.tick.s})` : `rotate(${(t * 540) % 360}deg)`;
+  });
+  // answer
+  const AB = { ...A }, ag = F.answerG;
+  box($('answer'), AB, F.answerOp, `translate(${(ag.cx - (A.x + A.w / 2)) * ag.k}px,${(ag.cy - (A.y + A.h / 2)) * ag.k}px) scale(${ag.s})`);
+  $('answer').style.transformOrigin = '50% 50%';
+  $('alab').style.opacity = F.answerInner; $('asub').style.opacity = F.sub.op * F.answerInner;
+  $('asub').style.transform = `translateY(${F.sub.y}px)`;
+  el.digits.forEach((d, i) => { const f = F.digits[i]; d.style.opacity = f.op; d.style.transform = `translate(${f.x}px,${f.y}px) rotate(${f.rot}rad) scale(${f.sx},${f.sy})`; });
+  F.kids.forEach((k, i) => put(el.kids[i], k.x, k.y, k.s, k.op));
+  F.rows.forEach((r, i) => {
+    const e = el.rows[i], g = r.g;
+    box(e, r.b, r.op, `translate(${(g.cx - (R[i].x + R[i].w / 2)) * g.k}px,${(g.cy - (R[i].y + R[i].h / 2)) * g.k}px) scale(${g.s})`);
+    e.style.transformOrigin = '50% 50%';
+    [...e.children].forEach(n => { n.style.opacity = r.inner; });
+    e.lastChild.style.transform = `scale(${r.lnk.s})`; e.lastChild.style.background = r.lnk.active ? 'rgba(62,224,143,.18)' : 'transparent';
+  });
+  // claim + stamp + caption (the claim later becomes the centre tile)
+  const cg = F.claimG;
+  box($('claim'), C, F.claim.op * cg.op, `translate(${cg.x}px,${F.claim.dy + cg.y}px) scale(${F.claim.s * cg.s}) rotate(${cg.rot}rad)`);
+  $('claim').style.transformOrigin = '50% 50%';
+  el.json.forEach((n, i) => { n.style.transform = `translateY(${F.json[i].y}px)`; n.style.opacity = F.json[i].visible ? 1 : 0; });
+  const stOp = F.stamp.op * cg.op * (t < T.toChart[0] ? 1 : 0) * (1 - sstep(T.tilesIn - 0.3, T.tilesIn, t));
+  put($('stamp'), C.x + C.w - 330, C.y - 34, 1, stOp, ` rotate(${F.stamp.rot}rad) scale(${F.stamp.s * F.stamp.sx},${F.stamp.s * F.stamp.sy})`);
+  put($('cap'), C.x + C.w / 2 - M.cap / 2, C.y + C.h + 34 + F.cap.y, 1, F.cap.op * (1 - sstep(T.pull[0], T.pull[0] + 0.4, t)));
+  // red card
+  box($('red'), RED, F.red.op, `translateY(${F.red.dy}px) scale(${F.red.s})`); $('red').style.transformOrigin = '50% 50%';
+  el.rdigits.forEach((d, i) => { const f = F.rdigits[i]; d.style.opacity = f.op; d.style.transform = `translateY(${f.y}px) scale(${f.sx},${f.sy})`; });
+  put($('rstamp'), RED.x + RED.w - 470, RED.y + RED.h - 120 + F.rstamp.dy, 1, F.rstamp.op, ` rotate(${F.rstamp.rot}rad) scale(${F.rstamp.s * F.rstamp.sx},${F.rstamp.s * F.rstamp.sy})`);
+  // tiles
+  F.tiles.forEach((f, i) => {
+    if (!f) return; const e = el.tiles[i];
+    box(e, f.r, f.op, `translate(${f.gx}px,${f.dy + f.gy}px) scale(${f.s})`); e.style.transformOrigin = '50% 50%';
+    e.style.borderColor = f.lit ? `rgba(255,196,107,${0.25 + 0.6 * f.lit})` : '';
+    e.style.boxShadow = f.lit ? `0 0 ${60 * f.lit}px rgba(255,196,107,${0.28 * f.lit}), 0 40px 90px -40px rgba(0,0,0,.65)` : '';
+  });
+  // chart
+  const co = F.chart.op, H = CHART.base - CHART.top;
+  [0, 1].forEach(i => {
+    const x = i ? CHART.x1 : CHART.x0, b = F.bars[i];
+    box($('trk' + i), { x, y: CHART.top, w: CHART.w, h: H }, co * 0.9);
+    if (i === 0) box($('bar0'), { x, y: CHART.base - H * b.v, w: CHART.w, h: H * b.v }, co * (b.k > 0.001 ? 1 : 0));
+    const bv = $('bv' + i), bvw = i ? M.bv1 : M.bv0;
+    put(bv, x + CHART.w / 2 - bvw / 2, CHART.base - H * b.v - 118, 1, co * sstep(0, 0.15, b.k));
+    bv.textContent = fmtPct(i ? 88.7 * clamp(b.k, 0, 1) : 6.5 * clamp(b.k, 0, 1));
+    put($('bl' + i), x + CHART.w / 2 - (i ? M.bl1 : M.bl0) / 2, CHART.base + 28, 1, co);
+  });
+  box($('base'), { x: CHART.x0 - 80, y: CHART.base, w: CHART.x1 + CHART.w - CHART.x0 + 160, h: 2 }, co);
+  put($('ccap'), 960 - M.ccap / 2, CHART.top - 120 + F.chart.cap.y, 1, co * F.chart.cap.op);
+  const b1op = t < T.underline[0] ? co * (F.bars[1].k > 0.001 ? 1 : 0) : 1;
+  box($('bar1'), F.bar1, b1op);
+  // staccato burst (screen space, hard cuts)
+  const sc = $('stac'); if (F.stac) { sc.style.display = 'flex'; sc.innerHTML = `<span>${F.stac.word}</span>`; } else sc.style.display = 'none';
+  // wordmark
+  el.letters.forEach((l, i) => { const f = F.letters[i]; l.style.opacity = f.op; l.style.transform = `translateY(${f.y}px) scale(${f.sx},${f.sy})`; });
+  put($('mark'), 960 - M.mark.w / 2, U.y - M.mark.h - 26, 1, t >= T.markIn ? 1 : 0);
+  el.tags.forEach((s, i) => { const f = F.tags[i]; s.style.opacity = f.op; s.style.transform = `translateY(${f.y}px) scale(${f.s})`; });
+  put($('tag'), 960 - M.tag / 2, U.y + 54, 1, t >= T.tagIn ? 1 : 0);
+  put($('url'), 960 - M.url / 2, U.y + 170 + F.url.dy, F.url.s, F.url.op);
+  // the hand, drawn in screen space at its world position
+  const hp = OM.project(V, F.hand.x, F.hand.y), cur = $('cursor');
+  show(cur, handVisible(t)); cur.style.transform = `translate(${hp[0]}px,${hp[1]}px) scale(${F.hand.s})`;
+  if (HUD) $('hud').textContent = t.toFixed(2) + 's';
+  return F;
+}
+// ══════════════════════════════ contract ══════════════════════════════
+const HUD = /hud/.test(location.search);
+function measure() {
+  const w = $('words'); show(w, true); w.style.transform = 'none';
+  M.words = { w: w.offsetWidth, h: w.offsetHeight }; M.words.x = 960 - M.words.w / 2; M.words.y = 540 - M.words.h / 2;
+  const num = $('num'); M.digits = el.digits.map(d => num.offsetLeft + d.offsetLeft + d.offsetWidth / 2);
+  M.numCx = num.offsetLeft + num.offsetWidth / 2;
+  NUMC = { x: A.x + M.numCx, y: A.y + num.offsetTop + num.offsetHeight / 2 };
+  M.digits = M.digits.map(x => x);   // relative to the card: impactSplit splits around the number's centre
+  M.numCx = num.offsetLeft + num.offsetWidth / 2;
+  const mk = $('mark'); show(mk, true); M.mark = { w: mk.offsetWidth, h: mk.offsetHeight };
+  U.w = Math.round(M.mark.w * 0.62); U.x = 960 - U.w / 2; U.y = 590;
+  const wOf = id => { const e = $(id); show(e, true); return e.offsetWidth; };
+  M.tag = wOf('tag'); M.url = wOf('url'); M.cap = wOf('cap'); M.ccap = wOf('ccap');
+  $('bv0').textContent = '6.5%'; $('bv1').textContent = '88.7%'; M.bv0 = wOf('bv0'); M.bv1 = wOf('bv1');
+  M.bl0 = wOf('bl0'); M.bl1 = wOf('bl1');
+  // fixed grain over the ground (alpha ≤ 7/255) so the dark gradient does not band in 8-bit video
+  NOISE = document.createElement('canvas'); NOISE.width = 1920; NOISE.height = 1080;
+  const g = NOISE.getContext('2d'), img = g.createImageData(256, 256), r = OM.rng(11);
+  for (let i = 0; i < img.data.length; i += 4) { const v = r() < 0.5 ? 255 : 0; img.data[i] = img.data[i + 1] = img.data[i + 2] = v; img.data[i + 3] = Math.floor(r() * 7); }
+  const tile = document.createElement('canvas'); tile.width = tile.height = 256; tile.getContext('2d').putImageData(img, 0, 0);
+  g.fillStyle = g.createPattern(tile, 'repeat'); g.fillRect(0, 0, 1920, 1080);
+  buildKeys();
+}
+window.__seek = async t => { seek(t); return true; };
+window.__ready = (window.LOOK && LOOK.ready ? LOOK.ready : Promise.resolve()).then(() => document.fonts.ready).then(() => { measure(); return seek(0); });
+const trackBoxes = t => {
+  const F = frame(t), V = OM.view(F.cam), out = {};
+  const add = (k, b, op) => { if (op > 0.05) out[k] = { ...OM.projectBox(V, b), op }; };
+  const w0 = F.words[0], wop = Math.max(...F.words.map(w => w.op));
+  add('words', { x: M.words.x + M.words.w * (1 - w0.s) / 2, y: M.words.y + w0.y + M.words.h * (1 - w0.s) / 2, w: M.words.w * w0.s, h: M.words.h * w0.s }, t > 1.5 ? wop : 0);
+  add('prompt', F.prompt, F.promptOp);
+  F.chips.forEach((c, i) => add('chip' + i, c.b, c.op));
+  // chip c2 grows into the answer card, which later folds into the claim: one object, one key
+  const sc = (b, g, k) => { const cx = b.x + b.w / 2 + (g.cx - (b.x + b.w / 2)) * k, cy = b.y + b.h / 2 + (g.cy - (b.y + b.h / 2)) * k;
+    return { x: cx - b.w * g.s / 2, y: cy - b.h * g.s / 2, w: b.w * g.s, h: b.h * g.s }; };
+  if (t >= T.toAnswer[1]) add('chip1', sc(A, F.answerG, F.answerG.k), F.answerOp);
+  add('num', { x: A.x + M.numCx - 420, y: NUMC.y - 80, w: 840, h: 160 }, F.answerOp * (t < T.split + 0.3 ? 1 : 0));
+  F.kids.forEach((k, i) => add('kid' + i, { x: k.x, y: k.y, w: 300 * k.s, h: 64 * k.s }, k.op));
+  F.rows.forEach((r, i) => add('row' + i, sc(r.b, r.g, r.g.k), r.op));
+  F.tiles.forEach((f, i) => { if (f) add('tile' + i, { x: f.r.x + f.gx + f.r.w * (1 - f.s) / 2, y: f.r.y + f.dy + f.gy + f.r.h * (1 - f.s) / 2, w: f.r.w * f.s, h: f.r.h * f.s }, f.op); });
+  add('claim', { x: C.x + F.claimG.x + C.w * (1 - F.claimG.s) / 2, y: C.y + F.claimG.y + C.h * (1 - F.claimG.s) / 2, w: C.w * F.claimG.s, h: C.h * F.claimG.s }, F.claim.op * F.claimG.op);
+  add('red', { x: RED.x, y: RED.y + F.red.dy, w: RED.w, h: RED.h }, F.red.op);
+  add('bar1', F.bar1, t < T.chartIn ? 0 : 1);
+  add('mark', { x: 960 - M.mark.w / 2, y: U.y - M.mark.h - 26, w: M.mark.w, h: M.mark.h }, t >= T.markIn + 0.3 ? 1 : 0);
+  return out;
+};
+window.__track = trackBoxes;
+window.__motion = (t0, t1) => {
+  const tm = (t0 + t1) / 2, d = OM.screenTravel(camAt(t0), camAt(t1), camAt(tm));
+  const a = trackBoxes(t0), b = trackBoxes(t1);
+  let m = d;
+  for (const k of Object.keys(a)) if (b[k]) m = Math.max(m, Math.hypot(a[k].x - b[k].x, a[k].y - b[k].y), Math.abs(a[k].w - b[k].w), Math.abs(a[k].h - b[k].h));
+  const h0 = OM.cursor(t0, HAND, CLICKS), h1 = OM.cursor(t1, HAND, CLICKS);
+  if (handVisible(tm)) m = Math.max(m, Math.hypot(h0.x - h1.x, h0.y - h1.y));
+  return m;
+};
+// sound events: what the score places, with pans taken from where things are on screen at that instant
+window.__events = () => {
+  const ev = [], add = (t, kind, wx = 960, v = 1) => { const c = camAt(t), p = OM.project(OM.view(c), wx, 540); ev.push({ t, kind, pan: clamp((p[0] - 960) / 960, -1, 1), v }); };
+  T.words.forEach((t, i) => add(t, 'word', M.words.x + M.words.w * (i + 0.5) / 4, 0.7));
+  add(T.wordsMorph[0], 'morph'); add(T.type0, 'type'); add(T.click, 'click', P.x + P.w - 60); add(T.toPill[0], 'morph');
+  T.chips.forEach((t, i) => { add(t, 'pop', 960, 0.8); add(t + T.tickAfter, 'tick', 600, 0.7 + i * 0.1); });
+  add(T.toAnswer[0], 'morph'); add(T.numIn, 'land'); add(T.dive[0], 'dive'); add(T.split, 'split');
+  add(T.rowsIn[0], 'drop', 960, 0.8); add(T.rowsIn[0] + 0.12, 'drop', 960, 0.7);
+  T.clicks.forEach(t => add(t, 'click', R[0].x + R[0].w - 140));
+  add(T.gather[0], 'gather'); add(T.claimIn, 'pop'); add(T.stamp, 'stamp'); add(T.whipOut[0], 'whip', 960);
+  add(T.rnum, 'slam', RED.x + RED.w / 2); add(T.rstamp, 'xstamp', RED.x + RED.w / 2); add(T.redOut, 'fall', RED.x + RED.w / 2);
+  add(T.whipBack[0], 'whip', 960); add(T.pull[0], 'pull'); T.highlights.forEach((t, i) => add(t, 'light', tileRect([2, 5, 7][i]).x + TW / 2));
+  add(T.toChart[0], 'gather'); add(T.grow1, 'grow', CHART.x1 + 140); add(T.grow0, 'grow', CHART.x0 + 140, 0.5);
+  T.stac.forEach(([t]) => add(t, 'hit')); add(T.underline[0], 'morph'); add(T.markIn, 'mark'); add(T.urlIn, 'pop', 960, 0.6);
+  return { T: DUR, events: ev.sort((a, b) => a.t - b.t) };
+};
+// preview: ?play loops in real time, ?t=12.3 pins a frame
+(async () => {
+  await window.__ready;
+  const q = new URLSearchParams(location.search);
+  if (HUD) $('hud').style.display = 'block';
+  if (q.has('t')) seek(parseFloat(q.get('t')));
+  else if (q.has('play')) { const t0 = performance.now(); const loop = () => { seek(((performance.now() - t0) / 1000) % DUR); requestAnimationFrame(loop); }; loop(); }
+})();
+</script>
+</body>
+</html>

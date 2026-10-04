@@ -1,0 +1,9 @@
+{
+ "name": "ledger",
+ "mood": "deep navy ledger, cream-white type, one verified green; red only for the untraceable number",
+ "color": {"ground": "#0b1020", "deep": "#05070e", "card": "#121a2e", "line": "#26324f",
+           "mute": "#8a96b4", "ink": "#eef2fa", "accent": "#3ee08f", "accent2": "#ff6b5e"},
+ "type": {"display": {"face": "Geist", "weight": 600, "tracking": -0.03},
+          "text": {"face": "Inter", "weight": 450, "tracking": -0.01},
+          "mono": {"face": "Geist Mono", "weight": 400, "tracking": 0}}
+}
