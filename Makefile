@@ -27,6 +27,9 @@ RUN ?= $(shell cat eval/runs/LATEST 2>/dev/null)
 questions:
 	uv run python eval/make_questions.py
 	uv run python eval/ground_truth.py
+	cd eval && uv run python make_heldout.py
+	uv run python eval/ground_truth.py --questions eval/questions_heldout.jsonl \
+		--out eval/ground_truth_heldout.json
 
 # Offline: replays the recorded model responses of run $(RUN) and recomputes all metrics.
 eval: ingest

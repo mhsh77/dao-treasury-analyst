@@ -5,5 +5,7 @@
   "recorded_with_git_sha": "5823423",
   "recorded_at": "2026-10-03T07:21:23Z",
   "questions_sha256": "4d1267f458849026",
-  "ground_truth_sha256": "a576c1073ca35a1a"
+  "ground_truth_sha256": "a576c1073ca35a1a",
+  "replay_with_commit": "35e38fa",
+  "note": "Replay from commit 35e38fa (git checkout 35e38fa && make eval); later commits changed tool schemas and prompts."
 }

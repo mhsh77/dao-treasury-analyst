@@ -1,0 +1,263 @@
+1
+00:00:00,600 --> 00:00:02,785
+This is DAO Treasury Analyst.
+
+2
+00:00:02,785 --> 00:00:07,230
+You ask a question about a DAO's treasury in plain English.
+
+3
+00:00:07,230 --> 00:00:17,327
+You get an answer where every number was computed by tested code, checked before you see it, and linked to the transactions behind it.
+
+4
+00:00:17,327 --> 00:00:24,560
+In the next few minutes I'll show how it works, and how I measured whether it is actually right.
+
+5
+00:00:25,760 --> 00:00:27,333
+Here is the problem.
+
+6
+00:00:27,333 --> 00:00:37,086
+If you paste a treasury's raw transactions into a language model and ask for total outflows in 2024, it answers confidently.
+
+7
+00:00:37,086 --> 00:00:42,198
+In my evaluation it said nine hundred twenty-five sextillion UNI.
+
+8
+00:00:42,198 --> 00:00:46,288
+It forgot that token amounts have eighteen decimals.
+
+9
+00:00:46,288 --> 00:00:50,142
+The real answer is about two point three million.
+
+10
+00:00:50,142 --> 00:00:56,120
+For treasury reporting, a fluent answer is worthless if the number is wrong.
+
+11
+00:00:57,320 --> 00:00:59,775
+It starts with data I can trust.
+
+12
+00:00:59,775 --> 00:01:13,970
+The pipeline pulls the full history of the Uniswap governance timelock from Etherscan, an archive node and DefiLlama prices, and pins it at one block, the end of June twenty twenty-six.
+
+13
+00:01:13,970 --> 00:01:18,803
+Every response is recorded, so the whole thing replays offline.
+
+14
+00:01:18,803 --> 00:01:25,478
+As a check, I rebuilt the balances from the transfers and compared them with the chain.
+
+15
+00:01:25,478 --> 00:01:26,936
+They match exactly.
+
+16
+00:01:26,936 --> 00:01:33,842
+Tokens are verified by contract address, so a spam token that calls itself UNI is ignored.
+
+17
+00:01:33,842 --> 00:01:40,440
+And every counterparty label has a source; anything I couldn't verify stays unlabeled.
+
+18
+00:01:41,640 --> 00:01:43,657
+Here is the architecture.
+
+19
+00:01:43,657 --> 00:01:49,545
+The language model never sees raw transactions and never does arithmetic.
+
+20
+00:01:49,545 --> 00:01:57,691
+It plans calls to typed tools: balances, flows, rankings, period comparisons and transaction details.
+
+21
+00:01:57,691 --> 00:02:00,757
+The tools compute with exact integers.
+
+22
+00:02:00,757 --> 00:02:09,145
+The model then submits its answer as structured claims, and each claim names the tool call it came from.
+
+23
+00:02:09,145 --> 00:02:15,840
+A verifier checks every one of those numbers in code before the user sees anything.
+
+24
+00:02:17,040 --> 00:02:18,813
+Here is a real answer.
+
+25
+00:02:18,813 --> 00:02:24,214
+I ask how much UNI the treasury has sent to the Uniswap Foundation.
+
+26
+00:02:24,214 --> 00:02:32,195
+The agent calls three tools, and answers: thirteen point one four million UNI, in two transactions.
+
+27
+00:02:32,195 --> 00:02:37,596
+Both transactions are linked, so anyone can open them on Etherscan.
+
+28
+00:02:37,596 --> 00:02:44,609
+The dollar value comes with a caveat: it uses a pinned price snapshot, not live prices.
+
+29
+00:02:44,609 --> 00:02:48,640
+Both claims were verified against the tool output.
+
+30
+00:02:49,840 --> 00:02:51,474
+This is the verifier.
+
+31
+00:02:51,474 --> 00:02:57,076
+A claim is a value, a unit, the call it came from, and its transactions.
+
+32
+00:02:57,076 --> 00:03:10,693
+The verifier finds that value in the stored tool result, checks the unit and the transaction hashes, and rejects any number written into the prose that isn't a verified claim.
+
+33
+00:03:10,693 --> 00:03:16,062
+If something fails, the model gets one retry with the exact problems.
+
+34
+00:03:16,062 --> 00:03:20,497
+If it fails again, the user only sees the verified parts.
+
+35
+00:03:20,497 --> 00:03:26,800
+A number the model computed itself is rejected, even when it happens to be right.
+
+36
+00:03:28,000 --> 00:03:31,189
+Just as important is knowing when to say no.
+
+37
+00:03:31,189 --> 00:03:34,884
+It refuses investment advice and price predictions.
+
+38
+00:03:34,884 --> 00:03:44,378
+It refuses to look up wallets that aren't the treasury or a verified institution, because that could mean profiling private people.
+
+39
+00:03:44,378 --> 00:03:52,712
+And when the data simply isn't there, like a date after the snapshot, it abstains and says exactly what is missing.
+
+40
+00:03:52,712 --> 00:03:56,480
+These are real recorded answers from the evaluation.
+
+41
+00:03:57,680 --> 00:03:59,004
+Then I measured it.
+
+42
+00:03:59,004 --> 00:04:04,440
+I wrote eighty-five questions, including twenty-three that should be declined.
+
+43
+00:04:04,440 --> 00:04:14,546
+The expected answers come from a separate SQL script that shares no code with the tools, and the two agree on every figure they can both compute.
+
+44
+00:04:14,546 --> 00:04:24,791
+I compared three setups with the same model: a naive baseline that reads the raw transactions, the tools without the verifier, and the full system.
+
+45
+00:04:24,791 --> 00:04:31,760
+Every model call is recorded, so anyone can replay the evaluation offline and get identical numbers.
+
+46
+00:04:32,960 --> 00:04:34,458
+Here are the results.
+
+47
+00:04:34,458 --> 00:04:43,800
+The naive baseline answered six and a half percent of the answerable questions correctly, and wrongly gave up on a quarter of them.
+
+48
+00:04:43,800 --> 00:04:50,361
+With typed tools, accuracy jumps to almost eighty-nine percent, using a tenth of the tokens.
+
+49
+00:04:50,361 --> 00:04:54,640
+Advice requests and unknown wallets were refused every time.
+
+50
+00:04:55,840 --> 00:05:00,677
+There's also a finding I didn't expect, and I report it as it is.
+
+51
+00:05:00,677 --> 00:05:03,355
+The verifier did not raise accuracy.
+
+52
+00:05:03,355 --> 00:05:07,299
+Once the model had tools, it never invented a number.
+
+53
+00:05:07,299 --> 00:05:19,428
+The verifier rejected two correct sums the model had computed itself, and its prose check flagged harmless digits, like the four hundred four in a delegate's name.
+
+54
+00:05:19,428 --> 00:05:26,720
+So its value is a guarantee, not a score: every figure a user sees can be traced to a tool result.
+
+55
+00:05:27,920 --> 00:05:31,218
+The error analysis pointed to four fixes.
+
+56
+00:05:31,218 --> 00:05:41,436
+To avoid tuning on the test, I evaluated them on thirty-two new held-out questions, and ran the old code on the same questions.
+
+57
+00:05:41,436 --> 00:05:50,124
+Accuracy went from seventy-six to eighty-eight percent, and correct refusals from eighty-three to a hundred.
+
+58
+00:05:50,124 --> 00:05:56,560
+It's a small sample, so I traced every changed answer to the fix that caused it.
+
+59
+00:05:57,760 --> 00:06:05,054
+You can use it from the command line, or as a Telegram bot, and it ships with Docker for a small server.
+
+60
+00:06:05,054 --> 00:06:12,839
+The model provider is swappable, and pointing it at another DAO or another EVM chain is a configuration change.
+
+61
+00:06:12,839 --> 00:06:18,240
+Every question, tool call and verification result is written to an audit log.
+
+62
+00:06:19,440 --> 00:06:22,343
+And you don't have to trust me either.
+
+63
+00:06:22,343 --> 00:06:32,960
+Clone the repository, and three commands rebuild the data, replay the full evaluation and run all the tests, offline, without any API keys.
+
+64
+00:06:34,160 --> 00:06:41,660
+That's DAO Treasury Analyst: typed tools, verified claims, and an evaluation you can rerun yourself.
+
+65
+00:06:41,660 --> 00:06:47,360
+If you run a DAO and want this for your treasury, it's a config change away.
+
+66
+00:06:47,360 --> 00:06:50,360
+The code and every result are on GitHub.

@@ -48,3 +48,9 @@ files = ["src"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
+
+[tool.ruff.lint.per-file-ignores]
+# Slide HTML and CSS are kept verbatim for readability.
+"docs/video/*.py" = ["E501"]
+"docs/video/film/*.py" = ["E501"]
+"docs/img/*.py" = ["E501"]

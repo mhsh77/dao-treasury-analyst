@@ -1,0 +1,8 @@
+build/
+film/motion.js
+film/look.js
+film/vo/
+film/vot/
+film/_frames/
+film/events.json
+film/*.wav

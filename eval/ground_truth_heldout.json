@@ -1,0 +1,342 @@
+{
+ "h001": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "316402449.524099441917661076"
+   }
+  ]
+ },
+ "h002": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "ETH",
+    "value": "0.219089824609891454"
+   }
+  ]
+ },
+ "h003": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "371260163.290000000009999999"
+   },
+   {
+    "unit": "USD",
+    "value": "2747325208.35"
+   }
+  ]
+ },
+ "h004": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "1000000"
+   }
+  ]
+ },
+ "h005": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "4957002.000000000000000001"
+   }
+  ]
+ },
+ "h006": {
+  "mentions": [
+   [
+    "Franchiser delegation - Uniswap Foundation",
+    "0x3d4acfd2c8b0641fb8db762179ee5a8db385e573"
+   ]
+  ],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "2500000.000000000000000001"
+   }
+  ]
+ },
+ "h007": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "20700317.71"
+   }
+  ]
+ },
+ "h008": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "86000000"
+   }
+  ]
+ },
+ "h009": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "2500000.000000000000000001"
+   }
+  ]
+ },
+ "h010": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "count",
+    "value": "11"
+   }
+  ]
+ },
+ "h011": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "count",
+    "value": "8"
+   }
+  ]
+ },
+ "h012": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "70365150.710000000000000001"
+   }
+  ]
+ },
+ "h013": {
+  "mentions": [
+   [
+    "Uniswap Foundation custody multisig",
+    "0xe571dc7a558bb6d68ffe264c3d7bb98b0c6c73fc"
+   ],
+   [
+    "Franchiser delegation - Anode (fka StableLab)",
+    "0xfb6b912cf7082031822f52e7d7ef59280f97a257"
+   ],
+   [
+    "Franchiser delegation - PGov",
+    "0x61bed6a58c4dc592f1dc32f9ec0f67e49208405c"
+   ]
+  ],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "10685984.71"
+   },
+   {
+    "unit": "UNI",
+    "value": "2499858"
+   },
+   {
+    "unit": "UNI",
+    "value": "2250000"
+   }
+  ]
+ },
+ "h014": {
+  "mentions": [
+   [
+    "UNI treasury vester 2 (year 2)",
+    "0xe3953d9d317b834592ab58ab2c7a6ad22b54075d"
+   ]
+  ],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "126077347.795281582952815831"
+   }
+  ]
+ },
+ "h015": {
+  "mentions": [
+   [
+    "2023-10",
+    "October"
+   ]
+  ],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "10685984.71"
+   }
+  ]
+ },
+ "h016": {
+  "mentions": [
+   [
+    "Uniswap Council (formerly Uniswap Accountability Committee) primary multisig",
+    "0x3b59c6d0034490093460787566dc5d6ce17f2f9c"
+   ],
+   [
+    "DeFi Education Fund UNI stream contract",
+    "0x3b560de4db054b54945ec95c8c346d8901cfdab9"
+   ]
+  ],
+  "values": [
+   {
+    "unit": "USD",
+    "value": "11239459.63"
+   },
+   {
+    "unit": "USD",
+    "value": "5380000.00"
+   }
+  ]
+ },
+ "h017": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "5967206.000000000000000001"
+   },
+   {
+    "unit": "UNI",
+    "value": "20700317.71"
+   }
+  ]
+ },
+ "h018": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "count",
+    "value": "9"
+   },
+   {
+    "unit": "count",
+    "value": "13"
+   }
+  ]
+ },
+ "h019": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "399516926.290000000009999999"
+   },
+   {
+    "unit": "UNI",
+    "value": "269634857.290100000009999999"
+   }
+  ]
+ },
+ "h020": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "percent",
+    "value": "-50.46"
+   }
+  ]
+ },
+ "h021": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "1000000"
+   }
+  ]
+ },
+ "h022": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "369506042.287209538315428714"
+   },
+   {
+    "unit": "UNI",
+    "value": "2296058"
+   }
+  ]
+ },
+ "h023": {
+  "mentions": [
+   [
+    "Uniswap Council (formerly Uniswap Accountability Committee) primary multisig",
+    "0x3b59c6d0034490093460787566dc5d6ce17f2f9c"
+   ]
+  ],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "549124"
+   },
+   {
+    "unit": "UNI",
+    "value": "1615832"
+   }
+  ]
+ },
+ "h024": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "34615"
+   }
+  ]
+ },
+ "h025": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "2500000.000000000000000001"
+   },
+   {
+    "unit": "UNI",
+    "value": "2500001.188270410000000001"
+   }
+  ]
+ },
+ "h026": {
+  "mentions": [],
+  "values": []
+ },
+ "h027": {
+  "mentions": [],
+  "values": []
+ },
+ "h028": {
+  "mentions": [],
+  "values": []
+ },
+ "h029": {
+  "mentions": [],
+  "values": []
+ },
+ "h030": {
+  "mentions": [],
+  "values": []
+ },
+ "h031": {
+  "mentions": [],
+  "values": [
+   {
+    "unit": "UNI",
+    "value": "297567467.788939624566062908"
+   }
+  ]
+ },
+ "h032": {
+  "mentions": [],
+  "values": []
+ }
+}

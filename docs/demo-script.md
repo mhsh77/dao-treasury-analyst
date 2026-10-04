@@ -1,5 +1,7 @@
 # Demo script (2-3 minutes)
 
+> The finished, narrated version is [docs/video/dao-treasury-analyst.mp4](video/dao-treasury-analyst.mp4).
+
 Spoken walkthrough for a video or a call. Short sentences. Screen cues in brackets.
 
 ---

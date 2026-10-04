@@ -45,6 +45,14 @@ class ListTransfersArgs(BaseModel):
     limit: int = Field(20, ge=1, le=100)
     sort: SortBy = SortBy.TIME_ASC
     include_unverified: bool = Field(False, description="Include unverified (often spam) tokens")
+    label_contains: str | None = Field(
+        None,
+        description="Only counterparties whose label name contains this text "
+        "(e.g. all addresses of one organization)",
+    )
+    exclude_categories: list[str] | None = Field(
+        None, description='Leave out these counterparty categories, e.g. ["burn"]'
+    )
 
 
 class AggregateArgs(BaseModel):
@@ -53,6 +61,14 @@ class AggregateArgs(BaseModel):
     token: str | None = None
     date_range: DateRange | None = None
     counterparty_category: str | None = None
+    label_contains: str | None = Field(
+        None,
+        description="Only counterparties whose label name contains this text "
+        "(e.g. all addresses of one organization)",
+    )
+    exclude_categories: list[str] | None = Field(
+        None, description='Leave out these counterparty categories, e.g. ["burn"]'
+    )
 
 
 class TopArgs(BaseModel):
@@ -71,6 +87,9 @@ class CompareArgs(BaseModel):
     period_a: DateRange
     period_b: DateRange
     token: str | None = Field(None, description="Omit for USD totals across tokens")
+    direction: FlowDirection = Field(
+        FlowDirection.ANY, description="For transfer_count only: count in, out or any"
+    )
 
 
 @dataclass(frozen=True)
