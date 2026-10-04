@@ -1,6 +1,6 @@
 # Hero film: "One number, traced"
 
-`one-number-traced.mp4` is a 64-second narrated film, 1080p30, with English subtitles in
+`one-number-traced.mp4` is a 64-second narrated film (1080p30, shutter motion blur), with English subtitles in
 `one-number-traced.srt`. It follows one answer from the question to the transactions
 behind it, then shows the verifier, the refusals, and the evaluation result.
 
@@ -20,7 +20,8 @@ The film is built with [onetake](https://github.com/feitangyuan/onetake). It is 
 composition (`comp.html`) in which every value is a pure function of time. Onetake renders
 it frame by frame with shutter motion blur and synthesises the sound effects. Onetake's
 probe gave this cut a continuity score of 1.00: every section boundary is carried by an
-object that moves.
+object that moves, and `verify_promo.py` passes every leg (cadence, rest, audio, continuity,
+curves, framing).
 
 - `comp.html` holds the composition: the timeline, the camera, `__track`, `__motion` and `__events`.
 - `look.json` sets the palette and faces. Onetake's `look.py apply` turns it into `look.js`,
