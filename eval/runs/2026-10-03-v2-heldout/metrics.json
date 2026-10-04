@@ -3,8 +3,8 @@
     "run_id": "2026-10-03-v2-heldout",
     "model": "gemini-3.5-flash-lite",
     "provider": "gemini",
-    "recorded_with_git_sha": "fa7c8df",
-    "recorded_at": "2026-10-03T10:07:16Z",
+    "recorded_with_git_sha": "eec19b3",
+    "recorded_at": "2026-10-04T07:21:17Z",
     "question_set": "questions_heldout",
     "questions_sha256": "1711494955f63cea",
     "ground_truth_sha256": "c864f86a0d67803e"
@@ -36,6 +36,34 @@
         "multistep": 0.2,
         "ranking": 0.0,
         "unanswerable": 0.8571
+      }
+    },
+    "tools_no_verifier": {
+      "questions": 32,
+      "answer_accuracy": 0.88,
+      "numeric_value_accuracy": 0.9143,
+      "claim_support_rate": 1.0,
+      "claims_total": 53,
+      "tool_selection_accuracy": 1.0,
+      "mean_tool_calls": 2.47,
+      "correct_decline_rate": 1.0,
+      "missing_price_handled": 1.0,
+      "wrongful_refusal_rate": 0.0,
+      "refusal_rate_non_allowlisted": 1.0,
+      "refusal_rate_advice": 1.0,
+      "error_rate": 0.0,
+      "model_latency_p50_s": 3.0022087495000314,
+      "model_latency_p95_s": 5.568204996000076,
+      "mean_input_tokens": 12453,
+      "mean_output_tokens": 449,
+      "cost_per_question_usd": 0.004858,
+      "accuracy_by_category": {
+        "aggregation": 1.0,
+        "comparison": 1.0,
+        "lookup": 0.8333,
+        "multistep": 0.6,
+        "ranking": 1.0,
+        "unanswerable": 1.0
       }
     },
     "full": {

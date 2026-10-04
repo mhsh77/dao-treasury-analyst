@@ -2,8 +2,8 @@
   "run_id": "2026-10-03-v2-heldout",
   "model": "gemini-3.5-flash-lite",
   "provider": "gemini",
-  "recorded_with_git_sha": "fa7c8df",
-  "recorded_at": "2026-10-03T10:07:16Z",
+  "recorded_with_git_sha": "eec19b3",
+  "recorded_at": "2026-10-04T07:21:17Z",
   "question_set": "questions_heldout",
   "questions_sha256": "1711494955f63cea",
   "ground_truth_sha256": "c864f86a0d67803e"

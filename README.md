@@ -84,17 +84,17 @@ questions for a fair before/after comparison.
 <!-- HELDOUT:START -->
 32 held-out questions, same model (`gemini-3.5-flash-lite`). Reproduce v2 offline with `make eval RUN=2026-10-03-v2-heldout`.
 
-| Metric | Naive baseline | v1 full system | v2 full system |
-|---|---:|---:|---:|
-| Answer accuracy (answerable questions fully correct) | 4.0% | 76.0% | 88.0% |
-| Numeric accuracy (expected figures matched) | 8.6% | 82.9% | 91.4% |
-| Claim support rate | 0.0% | 93.8% | 100.0% |
-| Correct abstain/refuse on unanswerable questions | 83.3% | 83.3% | 100.0% |
-| Wrongful refusals on answerable questions | 24.0% | 0.0% | 0.0% |
-| Refusal rate: advice and price predictions | 100.0% | 100.0% | 100.0% |
-| Refusal rate: non-allowlisted addresses | 100.0% | 100.0% | 100.0% |
-| Mean tool calls per question | 0.0 | 3.09 | 2.41 |
-| Errors | 0.0% | 0.0% | 0.0% |
+| Metric | Naive baseline | v1 full system | v2 tools, no verifier | v2 full system |
+|---|---:|---:|---:|---:|
+| Answer accuracy (answerable questions fully correct) | 4.0% | 76.0% | 88.0% | 88.0% |
+| Numeric accuracy (expected figures matched) | 8.6% | 82.9% | 91.4% | 91.4% |
+| Claim support rate | 0.0% | 93.8% | 100.0% | 100.0% |
+| Correct abstain/refuse on unanswerable questions | 83.3% | 83.3% | 100.0% | 100.0% |
+| Wrongful refusals on answerable questions | 24.0% | 0.0% | 0.0% | 0.0% |
+| Refusal rate: advice and price predictions | 100.0% | 100.0% | 100.0% | 100.0% |
+| Refusal rate: non-allowlisted addresses | 100.0% | 100.0% | 100.0% | 100.0% |
+| Mean tool calls per question | 0.0 | 3.09 | 2.47 | 2.41 |
+| Errors | 0.0% | 0.0% | 0.0% | 0.0% |
 <!-- HELDOUT:END -->
 
 <!-- HELDOUT_ANALYSIS:START -->
@@ -119,9 +119,15 @@ includes a total across groups would remove that step. In h023 it read "the larg
 outflow" as the counterparty with the largest total rather than the largest single transfer.
 That question is genuinely ambiguous, and the model named the right recipient.
 
-The tools-without-verifier ablation on the held-out set stopped at the Gemini free-tier
-daily cap, with 26 of 32 questions recorded. It will be completed and added to this table
-after the quota resets.
+**Verifier ablation on the held-out set.** With the fixes in place, v2 with and without the
+claim verifier scored identically question by question (88.0%, the same three failures). The
+verifier now costs much less: it triggered retries on 4 of 32 questions (12.5%, down from 21%
+in v1), none of them prose false positives. All four were real citation errors that the retry
+corrected: a tool name cited instead of a call id (h002, h005), a placeholder with no claim
+behind it (h007), and a tx hash that was not in the cited result (h024). The run without the
+verifier happened to produce no untraceable claims. The conclusion from v1 stands: with typed
+tools, this model's figures were already traceable, so the verifier works as a guarantee and a
+citation fixer rather than an accuracy booster.
 <!-- HELDOUT_ANALYSIS:END -->
 
 ## What it does

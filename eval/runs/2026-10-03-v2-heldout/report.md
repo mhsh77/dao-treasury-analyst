@@ -1,37 +1,37 @@
 # Eval run `2026-10-03-v2-heldout`
 
-Model: `gemini-3.5-flash-lite` via gemini. Questions: 32. Recorded at 2026-10-03T10:07:16Z from commit `fa7c8df`.
+Model: `gemini-3.5-flash-lite` via gemini. Questions: 32. Recorded at 2026-10-04T07:21:17Z from commit `eec19b3`.
 
-| Metric | Naive baseline | Full system |
-|---|---:|---:|
-| Answer accuracy (answerable questions fully correct) | 4.0% | 88.0% |
-| Numeric accuracy (expected figures matched) | 8.6% | 91.4% |
-| Claim support rate (claims traceable to tool output) | 0.0% | 100.0% |
-| Correct abstain/refuse on unanswerable questions | 83.3% | 100.0% |
-| Wrongful refusals on answerable questions (lower is better) | 24.0% | 0.0% |
-| Refusal rate: non-allowlisted addresses | 100.0% | 100.0% |
-| Refusal rate: advice and price predictions | 100.0% | 100.0% |
-| Missing price handled (no invented USD) | 100.0% | 100.0% |
-| Tool selection accuracy | n/a | 100.0% |
-| Mean tool calls per question | 0.0 | 2.41 |
-| Model latency p50 (s) | 1.5 | 2.9 |
-| Model latency p95 (s) | 3.2 | 5.3 |
-| Mean input tokens per question | 139,355 | 11,573 |
-| Approx. cost per question at paid-tier prices (USD) | $0.0423 | $0.0047 |
-| Errors (provider failures, step limit) | 0.0% | 0.0% |
+| Metric | Naive baseline | Tools, no verifier | Full system |
+|---|---:|---:|---:|
+| Answer accuracy (answerable questions fully correct) | 4.0% | 88.0% | 88.0% |
+| Numeric accuracy (expected figures matched) | 8.6% | 91.4% | 91.4% |
+| Claim support rate (claims traceable to tool output) | 0.0% | 100.0% | 100.0% |
+| Correct abstain/refuse on unanswerable questions | 83.3% | 100.0% | 100.0% |
+| Wrongful refusals on answerable questions (lower is better) | 24.0% | 0.0% | 0.0% |
+| Refusal rate: non-allowlisted addresses | 100.0% | 100.0% | 100.0% |
+| Refusal rate: advice and price predictions | 100.0% | 100.0% | 100.0% |
+| Missing price handled (no invented USD) | 100.0% | 100.0% | 100.0% |
+| Tool selection accuracy | n/a | 100.0% | 100.0% |
+| Mean tool calls per question | 0.0 | 2.47 | 2.41 |
+| Model latency p50 (s) | 1.5 | 3.0 | 2.9 |
+| Model latency p95 (s) | 3.2 | 5.6 | 5.3 |
+| Mean input tokens per question | 139,355 | 12,453 | 11,573 |
+| Approx. cost per question at paid-tier prices (USD) | $0.0423 | $0.0049 | $0.0047 |
+| Errors (provider failures, step limit) | 0.0% | 0.0% | 0.0% |
 
 ## Accuracy by category
 
 Unanswerable questions count as correct when the system declines without numbers.
 
-| Category | Naive baseline | Full system |
-|---|---:|---:|
-| aggregation | 0.0% | 100.0% |
-| comparison | 0.0% | 100.0% |
-| lookup | 0.0% | 83.3% |
-| multistep | 20.0% | 60.0% |
-| ranking | 0.0% | 100.0% |
-| unanswerable | 85.7% | 100.0% |
+| Category | Naive baseline | Tools, no verifier | Full system |
+|---|---:|---:|---:|
+| aggregation | 0.0% | 100.0% | 100.0% |
+| comparison | 0.0% | 100.0% | 100.0% |
+| lookup | 0.0% | 83.3% | 83.3% |
+| multistep | 20.0% | 60.0% | 60.0% |
+| ranking | 0.0% | 100.0% | 100.0% |
+| unanswerable | 85.7% | 100.0% | 100.0% |
 
 ## Failures: Naive baseline (25)
 
@@ -60,6 +60,12 @@ Unanswerable questions count as correct when the system declines without numbers
 - `h023` [multistep] outcome=abstain. Who received the largest UNI outflow in 2024, and how much has the treasury sent to them in total over its history? - missing 549124 UNI; missing 1615832 UNI; missing mention of [['Uniswap Council (formerly Uniswap Accountability Committee) primary multisig', '0x3b59c6d0034490093460787566dc5d6ce17f2f9c']]
 - `h024` [multistep] outcome=answer. Excluding transfers to the burn address, how much UNI left the treasury in December 2025? - missing 34615 UNI
 - `h030` [unanswerable] outcome=abstain. How much is the treasury's BOME worth in dollars? 
+
+## Failures: Tools, no verifier (3)
+
+- `h004` [lookup] outcome=answer. How much UNI did transaction 0x4d5c546045a5948e200be8acc27a547bbaec977c33bc7681787663c70ba45972 move out of the treasury? - missing 1000000 UNI
+- `h021` [multistep] outcome=answer. How much UNI did the DeFi Education Fund's addresses receive in 2024 in total? - missing 1000000 UNI
+- `h023` [multistep] outcome=answer. Who received the largest UNI outflow in 2024, and how much has the treasury sent to them in total over its history? - missing 549124 UNI
 
 ## Failures: Full system (3)
 
