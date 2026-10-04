@@ -8,6 +8,13 @@ Default target: the [Uniswap DAO treasury](https://docs.uniswap.org/concepts/gov
 (Governance Timelock `0x1a9C…35BC`) on Ethereum mainnet, full history up to block 25,433,938
 (2026-06-30 23:59:59 UTC). Pointing it at another DAO is a config change.
 
+[![Watch the 7-minute walkthrough](docs/video/poster.jpg)](docs/video/dao-treasury-analyst.mp4)
+
+**▶ [Watch the 7-minute narrated walkthrough](docs/video/dao-treasury-analyst.mp4)**
+(English subtitles: [`.srt`](docs/video/dao-treasury-analyst.srt)). It covers the problem, the
+data layer, a real recorded answer, the claim verifier, refusals, the evaluation and its
+honest findings, the held-out follow-up, and how to reproduce everything.
+
 ![Example answer from the CLI](docs/img/example-answer.png)
 
 ## Results
